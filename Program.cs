@@ -19,14 +19,14 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 
-    // Настройка Swagger для поддержки JWT
+    // Для сваггера
     var securityScheme = new OpenApiSecurityScheme
     {
         Name = "JWT Authentication",
         Description = "Enter JWT Bearer token **_only_**",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
-        Scheme = "bearer", // Соглашение о том, чтобы использовать Bearer
+        Scheme = "bearer",
         BearerFormat = "JWT",
         Reference = new OpenApiReference
         {
@@ -36,7 +36,7 @@ builder.Services.AddSwaggerGen(c =>
     };
     c.AddSecurityDefinition("Bearer", securityScheme);
 
-    // Добавление глобального требования безопасности
+    
     var securityRequirement = new OpenApiSecurityRequirement
     {
         {securityScheme, new string[] { }}
@@ -54,7 +54,7 @@ builder.Services.AddScoped<SpecialityRepository>();
 
 // Регистрация сервисов
 builder.Services.AddScoped<IDoctorServic, DoctorServic>();
-builder.Services.AddScoped<JWTService>();
+builder.Services.AddScoped<IJWTService, JWTService>();
 
 // Регистрация настроек
 builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("AuthSettings"));

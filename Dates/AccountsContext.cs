@@ -10,6 +10,8 @@ namespace hospital_api.Dates
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<SpecialityModel> Specialities { get; set; }
         
+        public DbSet<BlackListTokens> BlackListTokens { get; set; }
+        
         public AccountsContext(DbContextOptions<AccountsContext> options) : base(options)
         {
             // Database.EnsureCreated();

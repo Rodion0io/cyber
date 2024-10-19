@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using hospital_api.CustomValidation;
 using hospital_api.Enums;
 
 namespace hospital_api.Modules;
@@ -18,6 +17,5 @@ public class DoctorRegisterModel
     public Gender gender { get; set; }
     public string? phone { get; set; }
     [Required]
-    [IsSpeciality]
     public Guid speciality { get; set; }
 }

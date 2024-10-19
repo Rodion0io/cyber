@@ -9,4 +9,8 @@ public interface IAccountRepository
     public Doctor? FindDoctor(string email);
     
     public DoctorRegisterModel[] ToDoctorRegisterModel(Doctor doctor); // Вопрос зедсь это можно реализовывать????
+
+    public Task AddToBlackList(BlackListTokens tokens);
+
+    public Task<bool> FindTokenInBlackList(string token);
 }

@@ -17,10 +17,12 @@ public class Dictionary : Controller
         _dictionaryService = dictionaryService;
     }
     
+    [Authorize]
     [HttpGet("speciality")]
     public async Task<IActionResult> Get()
     {
         var listSpeciality = await _dictionaryService.GetFullSpeciaityTable();
         return Ok(listSpeciality);
     }
+    
 }

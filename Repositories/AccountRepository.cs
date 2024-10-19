@@ -1,6 +1,7 @@
 using hospital_api.Dates;
 using hospital_api.Modules;
 using hospital_api.Repositories.repositoryInterfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Repositories;
 
@@ -28,11 +29,24 @@ public class AccountRepository : IAccountRepository
         }).ToArray();
     } // Этот метод может здесь находиться???
 
+    public DoctorModel[] ToDoctorModel(Doctor doctor)
+    {
+        return _context.Doctors.Select(x => new DoctorModel
+        {
+            id = x.id,
+            createTime = x.createTime,
+            name = x.name,
+            birthday = x.birthday,
+            gender = x.gender,
+            email = x.email,
+            phone = x.phone
+        }).ToArray();
+    }
+
     public async Task Add(Doctor doctor)
     {
         await _context.Doctors.AddAsync(doctor);
         await _context.SaveChangesAsync();
-        
     }
 
     public Doctor? FindDoctor(string email)
@@ -50,5 +64,24 @@ public class AccountRepository : IAccountRepository
 
         return result;
     }
-    
+
+    public async Task AddToBlackList(BlackListTokens tokens)
+    {
+        await _context.BlackListTokens.AddAsync(tokens);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> FindTokenInBlackList(string token)
+    {
+        bool value = await _context.BlackListTokens.AnyAsync(x => x.token == token);
+
+        if (value)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

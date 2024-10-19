@@ -1,8 +1,12 @@
+using System.Runtime.InteropServices.ComTypes;
+using System.Security.Claims;
+using hospital_api.Dates;
 using hospital_api.Enums;
 using hospital_api.Modules;
 using hospital_api.Repositories;
 using hospital_api.Repositories.repositoryInterfaces;
 using hospital_api.Services.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 
 namespace hospital_api.Services;
@@ -10,11 +14,13 @@ namespace hospital_api.Services;
 public class DoctorServic : IDoctorServic
 {
     private readonly IAccountRepository _accountRepository;
-    private readonly JWTService _jwtService;
-
-    public DoctorServic(IAccountRepository accountRepository, JWTService jwtService)
+    private readonly AccountsContext _context;
+    private readonly IJWTService _jwtService;
+    
+    public DoctorServic(IAccountRepository accountRepository, AccountsContext context, IJWTService jwtService)
     {
         _accountRepository = accountRepository;
+        _context = context;
         _jwtService = jwtService;
     }
 
@@ -34,16 +40,25 @@ public class DoctorServic : IDoctorServic
 
         var checkAccaount = _accountRepository.FindDoctor(newAccount.email);
 
-        if (checkAccaount is not null)
+        if (checkAccaount != null)
         {
-            throw new Exception($"Doctor {newAccount.email} already exists");
+            throw new Exception($"с такой почтой пользователь существует!"); 
         }
         else
         {
-            var hashingPassword = new PasswordHasher<Doctor>().HashPassword(newAccount, newAccount.password);
-            newAccount.password = hashingPassword;
-            await _accountRepository.Add(newAccount);
-            Console.WriteLine($"password: {newAccount.password}, hashing password: {hashingPassword}");
+            var checkSpeciality = _context.Specialities.FindAsync((newAccount.speciality).ToString()).Result;
+            if (checkSpeciality is not null)
+            {
+                var hashingPassword = new PasswordHasher<Doctor>().HashPassword(newAccount, newAccount.password);
+                newAccount.password = hashingPassword;
+                await _accountRepository.Add(newAccount);
+                Console.WriteLine($"password: {newAccount.password}, hashing password: {hashingPassword}");
+            }
+            else
+            {
+                Console.WriteLine("Такой специальности нет!");
+                throw new Exception($"Speciality {newAccount.speciality} does not exist");
+            }
         }
     }
 
@@ -68,5 +83,20 @@ public class DoctorServic : IDoctorServic
         {
             throw new UnauthorizedAccessException("Doctor not found");
         }
+    }
+
+    public async Task GetDataInClaim(string token)
+    {
+        var claimIdentifier = _jwtService.DecodeToken(token).Claims.ToArray()[2].Value;
+
+        BlackListTokens model = new BlackListTokens(claimIdentifier, token);
+
+        await _accountRepository.AddToBlackList(model);
+
+    }
+
+    public async Task<bool> InBlackList(string token)
+    {
+        return await _accountRepository.FindTokenInBlackList(token);
     }
 }
