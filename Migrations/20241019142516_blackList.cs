@@ -14,12 +14,12 @@ namespace hospital_api.Migrations
                 name: "BlackListTokens",
                 columns: table => new
                 {
-                    doctorId = table.Column<string>(type: "text", nullable: false),
-                    token = table.Column<string>(type: "text", nullable: false)
+                    token = table.Column<string>(type: "text", nullable: false),
+                    doctorId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BlackListTokens", x => x.doctorId);
+                    table.PrimaryKey("PK_BlackListTokens", x => x.token);
                 });
         }
 

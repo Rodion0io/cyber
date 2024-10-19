@@ -33,10 +33,10 @@ public class AccountRepository : IAccountRepository
     {
         return _context.Doctors.Select(x => new DoctorModel
         {
-            id = x.id,
-            createTime = x.createTime,
+            id = (x.id).ToString(),
+            createTime = (x.createTime).ToString(),
             name = x.name,
-            birthday = x.birthday,
+            birthday = (x.birthday).ToString(),
             gender = x.gender,
             email = x.email,
             phone = x.phone
@@ -84,4 +84,12 @@ public class AccountRepository : IAccountRepository
             return false;
         }
     }
+    
+    public Doctor FindDoctorById(string id)
+    {
+        Doctor currentDoctor = _context.Doctors.FirstOrDefault(x => (x.id).ToString() == id);
+
+        return currentDoctor;
+    }
+    
 }

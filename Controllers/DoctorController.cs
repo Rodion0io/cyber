@@ -71,11 +71,23 @@ namespace hospital_api.Controllers
 
             _doctorServic.GetDataInClaim(token);
 
-            //почему так просто не работает?
+            //почему так не работает?
             // HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
             
             return Ok();
 
+        }
+
+        [HttpGet("profile")]
+        [Authorize]
+        public IActionResult GetProfile()
+        {
+            var authHeader = HttpContext.Request.Headers["Authorization"];
+            string token = authHeader.ToString().Split(" ")[1];
+
+            DoctorModel doctor = _doctorServic.GetDoctorInfa(token);
+            
+            return Ok(_doctorServic.GetDoctorInfa(token));
         }
     }
 }

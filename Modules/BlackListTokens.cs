@@ -4,8 +4,9 @@ namespace hospital_api.Modules;
 
 public class BlackListTokens
 {
-    [Key]
+    
     public string doctorId { get; set; }
+    [Key]
     public string token { get; set; }
 
     public BlackListTokens(string doctorId, string token)

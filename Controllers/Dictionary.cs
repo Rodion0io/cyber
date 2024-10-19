@@ -17,7 +17,7 @@ public class Dictionary : Controller
         _dictionaryService = dictionaryService;
     }
     
-    [Authorize]
+    // [Authorize]
     [HttpGet("speciality")]
     public async Task<IActionResult> Get()
     {

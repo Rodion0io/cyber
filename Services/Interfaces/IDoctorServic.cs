@@ -10,5 +10,6 @@ public interface IDoctorServic
     public TokenRespones Login(string email, string password);
     public Task GetDataInClaim(string token);
     public Task<bool> InBlackList(string token);
-
+    // Можно ли такого типа функцию создавать? или нужно через Task<>
+    public DoctorModel GetDoctorInfa(string id);
 }

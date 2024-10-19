@@ -99,4 +99,25 @@ public class DoctorServic : IDoctorServic
     {
         return await _accountRepository.FindTokenInBlackList(token);
     }
+
+    public DoctorModel GetDoctorInfa(string id)
+    {
+        
+        var claimIdentifier = _jwtService.DecodeToken(id).Claims.ToArray()[2].Value;
+
+        Doctor doctor = _accountRepository.FindDoctorById(claimIdentifier);
+        
+        DoctorModel result = new DoctorModel
+        {
+            id = (doctor.id).ToString(),
+            createTime = (doctor.createTime).ToString(),
+            name = doctor.name,
+            birthday = (doctor.birthday).ToString(),
+            gender = doctor.gender,
+            email = doctor.email,
+            phone = doctor.phone
+        };
+
+        return result;
+    }
 }

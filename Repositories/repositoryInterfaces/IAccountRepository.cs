@@ -13,4 +13,6 @@ public interface IAccountRepository
     public Task AddToBlackList(BlackListTokens tokens);
 
     public Task<bool> FindTokenInBlackList(string token);
+
+    public Doctor FindDoctorById(string id);
 }

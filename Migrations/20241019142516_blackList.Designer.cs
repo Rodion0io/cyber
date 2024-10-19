@@ -12,7 +12,7 @@ using hospital_api.Dates;
 namespace hospital_api.Migrations
 {
     [DbContext(typeof(AccountsContext))]
-    [Migration("20241018172229_blackList")]
+    [Migration("20241019142516_blackList")]
     partial class blackList
     {
         /// <inheritdoc />
@@ -27,14 +27,14 @@ namespace hospital_api.Migrations
 
             modelBuilder.Entity("hospital_api.Modules.BlackListTokens", b =>
                 {
-                    b.Property<string>("doctorId")
+                    b.Property<string>("token")
                         .HasColumnType("text");
 
-                    b.Property<string>("token")
+                    b.Property<string>("doctorId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("doctorId");
+                    b.HasKey("token");
 
                     b.ToTable("BlackListTokens");
                 });
