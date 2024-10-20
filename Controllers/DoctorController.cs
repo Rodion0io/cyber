@@ -43,7 +43,7 @@ namespace hospital_api.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginCredentialsModel loginRequest)
+        public async Task<IActionResult> Login([FromBody] LoginCredentialsModel loginRequest)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace hospital_api.Controllers
         //Вопрос в заголовке Authorization будет только одно же тело, отвечающее за токен?
         [HttpPost("logout")]
         [Authorize]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
             var authHeader = HttpContext.Request.Headers["Authorization"];
 
@@ -80,14 +80,29 @@ namespace hospital_api.Controllers
 
         [HttpGet("profile")]
         [Authorize]
-        public IActionResult GetProfile()
+        public async Task<IActionResult> GetProfile()
         {
+            
+            // Так стоит получать id для дальнеших операций?
             var authHeader = HttpContext.Request.Headers["Authorization"];
             string token = authHeader.ToString().Split(" ")[1];
 
             DoctorModel doctor = _doctorServic.GetDoctorInfa(token);
             
             return Ok(_doctorServic.GetDoctorInfa(token));
+        }
+
+        [HttpPut("profile")]
+        [Authorize]
+        public async Task<IActionResult> PutProfile([FromBody] DoctorEditModel model)
+        {
+            // Так стоит получать id для дальнеших операций?
+            var authHeader = HttpContext.Request.Headers["Authorization"];
+            string token = authHeader.ToString().Split(" ")[1];
+            
+            await _doctorServic.ChangeDatas(model, token);
+
+            return Ok();
         }
     }
 }

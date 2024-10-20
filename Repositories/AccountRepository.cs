@@ -1,6 +1,7 @@
 using hospital_api.Dates;
 using hospital_api.Modules;
 using hospital_api.Repositories.repositoryInterfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Repositories;
@@ -39,6 +40,18 @@ public class AccountRepository : IAccountRepository
             birthday = (x.birthday).ToString(),
             gender = x.gender,
             email = x.email,
+            phone = x.phone
+        }).ToArray();
+    }
+    
+    public DoctorEditModel[] ToDoctorEditModel(Doctor doctor)
+    {
+        return _context.Doctors.Select(x => new DoctorEditModel
+        {
+            email = x.email,
+            name = x.name,
+            birthday = x.birthday,
+            gender = x.gender,
             phone = x.phone
         }).ToArray();
     }
@@ -91,5 +104,19 @@ public class AccountRepository : IAccountRepository
 
         return currentDoctor;
     }
-    
+
+    public async Task UpdateDate(string id, DoctorEditModel newData)
+    {
+        
+        Console.WriteLine($"{id}");
+        Doctor doctor = await _context.Doctors.FindAsync(Guid.Parse(id));
+
+        doctor.email = newData.email;
+        doctor.name = newData.name;
+        doctor.birthday = newData.birthday;
+        doctor.gender = newData.gender;
+        doctor.phone = newData.phone;
+        
+        await _context.SaveChangesAsync();
+    }
 }

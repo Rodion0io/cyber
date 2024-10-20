@@ -120,4 +120,12 @@ public class DoctorServic : IDoctorServic
 
         return result;
     }
+
+    public async Task ChangeDatas(DoctorEditModel model, string id)
+    {
+        
+        var claimIdentifier = _jwtService.DecodeToken(id).Claims.ToArray()[2].Value;
+        
+        await _accountRepository.UpdateDate(claimIdentifier, model);
+    }
 }
