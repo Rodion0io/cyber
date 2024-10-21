@@ -51,14 +51,16 @@ builder.Services.AddDbContext<AccountsContext>(options => options.UseNpgsql(conn
 // Регистрация репозиториев
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<SpecialityRepository>();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 
 // Регистрация сервисов
 builder.Services.AddScoped<IDoctorServic, DoctorServic>();
 builder.Services.AddScoped<IJWTService, JWTService>();
+builder.Services.AddScoped<IDictionaryServic, DictionaryServic>();
+builder.Services.AddScoped<IPatientService, PatientService>();
 
 // Регистрация настроек
 builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("AuthSettings"));
-builder.Services.AddScoped<IDictionaryServic, DictionaryServic>();
 
 // Настройка аутентификации
 builder.Services.AddAuth(builder.Configuration);

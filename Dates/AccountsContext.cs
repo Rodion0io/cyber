@@ -12,6 +12,8 @@ namespace hospital_api.Dates
         
         public DbSet<BlackListTokens> BlackListTokens { get; set; }
         
+        public DbSet<PatientModel> Patients { get; set; }
+        
         public AccountsContext(DbContextOptions<AccountsContext> options) : base(options)
         {
             // Database.EnsureCreated();
