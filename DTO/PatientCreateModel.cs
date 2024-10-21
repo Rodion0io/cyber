@@ -7,7 +7,7 @@ public class PatientCreateModel
 {
     [Required]
     public string name { get; set; }
-    public DateTime birthDate { get; set; }
+    public DateTime birthday { get; set; }
     [Required]
     public Gender gender { get; set; }
 }

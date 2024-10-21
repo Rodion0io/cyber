@@ -26,11 +26,6 @@ namespace hospital_api.Controllers
                 return BadRequest("error");
             }
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
                 await _doctorServic.Registeration(model);

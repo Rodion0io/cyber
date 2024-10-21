@@ -12,10 +12,31 @@ namespace hospital_api.Controllers
     public class PatientController : Controller
     {
         
-        [HttpPost("register")]
-        public async Task<IActionResult> Post([FromBody] DoctorRegisterModel model)
+        private readonly IPatientService _patientService;
+
+        public PatientController(IPatientService patientService)
         {
-            return Ok();
+            _patientService = patientService;
+        }
+        
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Post([FromBody] PatientCreateModel model)
+        {
+            if (model == null)
+            {
+                return BadRequest("error");
+            }
+
+            try
+            {
+                await _patientService.RegistrationPatient(model);
+                return Ok("Patient was registered");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         

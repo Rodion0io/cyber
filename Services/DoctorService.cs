@@ -14,7 +14,14 @@ namespace hospital_api.Services;
 public class DoctorServic : IDoctorServic
 {
     private readonly IAccountRepository _accountRepository;
+    
+        
+        
+    // Надо вынести в репозиторий
     private readonly AccountsContext _context;
+    
+    
+    
     private readonly IJWTService _jwtService;
     
     public DoctorServic(IAccountRepository accountRepository, AccountsContext context, IJWTService jwtService)
