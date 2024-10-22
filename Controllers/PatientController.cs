@@ -4,6 +4,7 @@ using hospital_api.Services;
 using hospital_api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace hospital_api.Controllers
@@ -25,7 +26,7 @@ namespace hospital_api.Controllers
         {
             if (model == null)
             {
-                return BadRequest("error");
+                return BadRequest("Model is null");
             }
 
             try
@@ -33,9 +34,17 @@ namespace hospital_api.Controllers
                 await _patientService.RegistrationPatient(model);
                 return Ok("Patient was registered");
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred: " + ex.Message);
             }
         }
 

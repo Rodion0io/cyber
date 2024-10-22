@@ -1,17 +1,20 @@
 using hospital_api.Dates;
 using hospital_api.Modules;
 using hospital_api.Repositories.repositoryInterfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Repositories;
 
 
 // Здесь можно реализовать создание всех специальностей или надо выносить куда-то?
 
-public class SpecialityRepository
+public class DictionaryRepository : IDictionaryRepository
 {
     private readonly AccountsContext _context;
 
-    public SpecialityRepository(AccountsContext context)
+    public DictionaryRepository(AccountsContext context)
     {
         _context = context;
     }
@@ -66,5 +69,10 @@ public class SpecialityRepository
             _context.Specialities.AddAsync(newSpeciality);
         }
         _context.SaveChanges();
+    }
+
+    public async Task<List<SpecialityModel>> getFullListSpeciality()
+    {
+        return await _context.Specialities.ToListAsync();
     }
 }

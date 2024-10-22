@@ -14,6 +14,8 @@ namespace hospital_api.Dates
         
         public DbSet<PatientModel> Patients { get; set; }
         
+        public DbSet<Icd10Model> Icd { get; set; }
+        
         public AccountsContext(DbContextOptions<AccountsContext> options) : base(options)
         {
             // Database.EnsureCreated();

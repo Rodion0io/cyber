@@ -50,8 +50,9 @@ builder.Services.AddDbContext<AccountsContext>(options => options.UseNpgsql(conn
 
 // Регистрация репозиториев
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-builder.Services.AddScoped<SpecialityRepository>();
+builder.Services.AddScoped<DictionaryRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IDictionaryRepository, DictionaryRepository>();
 
 // Регистрация сервисов
 builder.Services.AddScoped<IDoctorServic, DoctorServic>();
@@ -82,7 +83,7 @@ if (app.Environment.IsDevelopment())
 // Инициализация специальностей
 using (var scope = app.Services.CreateScope())
 {
-    var value = scope.ServiceProvider.GetRequiredService<SpecialityRepository>();
+    var value = scope.ServiceProvider.GetRequiredService<DictionaryRepository>();
     value.Add();
 }
 
