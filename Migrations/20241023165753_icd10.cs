@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -15,13 +16,15 @@ namespace hospital_api.Migrations
                 name: "Icd",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     createTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     code = table.Column<string>(type: "text", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
-                    parentId = table.Column<Guid>(type: "uuid", nullable: false),
-                    actual = table.Column<int>(type: "integer", nullable: false),
-                    date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    recCode = table.Column<string>(type: "text", nullable: true),
+                    parentId = table.Column<string>(type: "text", nullable: true),
+                    actual = table.Column<int>(type: "integer", nullable: true),
+                    date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {

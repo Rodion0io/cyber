@@ -7,5 +7,8 @@ public interface IDictionaryRepository
 {
     public void Add();
     public Task<List<SpecialityModel>> getFullListSpeciality();
-    public Task<IActionResult> SendIcdInTable(List<>);
+    public Task AddIcd10Models(Icd10Model icd10Models);
+    public Task<int> GetSizeTable();
+    public Task<List<Icd10RecordModel>> getFullListIcd10();
+    public Task<List<Icd10RecordModel>> getFullListIcd10Roots();
 }

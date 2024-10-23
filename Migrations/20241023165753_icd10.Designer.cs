@@ -12,7 +12,7 @@ using hospital_api.Dates;
 namespace hospital_api.Migrations
 {
     [DbContext(typeof(AccountsContext))]
-    [Migration("20241022185719_icd10")]
+    [Migration("20241023165753_icd10")]
     partial class icd10
     {
         /// <inheritdoc />
@@ -79,11 +79,13 @@ namespace hospital_api.Migrations
 
             modelBuilder.Entity("hospital_api.Modules.Icd10Model", b =>
                 {
-                    b.Property<Guid>("id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<int>("actual")
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+
+                    b.Property<int?>("actual")
                         .HasColumnType("integer");
 
                     b.Property<string>("code")
@@ -93,15 +95,18 @@ namespace hospital_api.Migrations
                     b.Property<DateTime>("createTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("date")
+                    b.Property<DateTime?>("date")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("parentId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("parentId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("recCode")
+                        .HasColumnType("text");
 
                     b.HasKey("id");
 

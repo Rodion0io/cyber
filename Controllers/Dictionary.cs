@@ -22,7 +22,7 @@ public class Dictionary : Controller
     public async Task<IActionResult> GetSpeciality(string name, int pageNumber, int pageSize)
     {
         
-        //вот так нельзя вызывать. движок метода GetFullSpeciaityTable надо вынести в репозиторий
+        //вот так нельзя вызывать. движок метода GetFullSpeciaityTable
         var listSpeciality = await _dictionaryService.GetFullSpeciaityTable();
 
         // Это высчитывает значение count
@@ -35,14 +35,14 @@ public class Dictionary : Controller
         // Это уже сама пагинация
         var items = listSpeciality.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
         
-        var pagination = new PageInfoModel
+        PageInfoModel pagination = new PageInfoModel
         {
             size = pageSize,
             current = pageNumber,
             count = totalPages
         };
 
-        var result = new SpecialtiesPagedListModel
+        SpecialtiesPagedListModel result = new SpecialtiesPagedListModel
         {
             specialties = items,
             pagintaion = pagination
@@ -52,9 +52,34 @@ public class Dictionary : Controller
     }
 
     [HttpGet("icd10")]
-    public async Task<IActionResult> GetIcd10()
-
+    public async Task<IActionResult> GetIcd10(string name, int pageNumber, int pageSize)
     {
-        return Ok();
+        var listIcd = await _dictionaryService.FullListIcd();
+        int totalCount = await _dictionaryService.returnLenghtTable();
+        int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+        var items = listIcd.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+        
+        PageInfoModel pagination = new PageInfoModel
+        {
+            size = pageSize,
+            current = pageNumber,
+            count = totalPages
+        };
+
+        Icd10SearchModel result = new Icd10SearchModel
+        {
+            records = items,
+            pagintaion = pagination
+        };
+        
+        return Ok(result);
+    }
+
+    [HttpGet("icd10/roots")]
+    public async Task<IActionResult> GetIcd10Roots()
+    {
+        List<Icd10RecordModel> result = await _dictionaryService.FullListIcdRoots(); 
+        
+        return Ok(result);
     }
 }

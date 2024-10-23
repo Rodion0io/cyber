@@ -75,4 +75,41 @@ public class DictionaryRepository : IDictionaryRepository
     {
         return await _context.Specialities.ToListAsync();
     }
+
+    public async Task AddIcd10Models(Icd10Model icd10Models)
+    {
+        await _context.Icd.AddAsync(icd10Models);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<int> GetSizeTable()
+    {
+        int result = await _context.Icd.CountAsync();
+        return result;
+    }
+    
+    public async Task<List<Icd10RecordModel>> getFullListIcd10()
+    {
+        return await _context.Icd
+            .Select(i => new Icd10RecordModel
+            {
+                id = i.id,
+                createTime = i.createTime,
+                code = i.code,
+                name = i.name
+            })
+            .ToListAsync();
+    }
+
+    public async Task<List<Icd10RecordModel>> getFullListIcd10Roots()
+    {
+        return await _context.Icd.Where(i => i.parentId == null)
+            .Select(i => new Icd10RecordModel
+            {
+                id = i.id,
+                createTime = i.createTime,
+                code = i.code,
+                name = i.name
+            }).ToListAsync();
+    }
 }
