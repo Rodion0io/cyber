@@ -19,7 +19,9 @@ public class Dictionary : Controller
     }
     
     [HttpGet("speciality")]
-    public async Task<IActionResult> GetSpeciality(string name, int pageNumber, int pageSize)
+    public async Task<IActionResult> GetSpeciality([FromQuery(Name = "name")] string? name = null,
+        [FromQuery(Name = "pageNuber")] int pageNumber = 1,
+        [FromQuery(Name = "pageSize")] int pageSize = 1)
     {
         
         //вот так нельзя вызывать. движок метода GetFullSpeciaityTable
@@ -52,7 +54,9 @@ public class Dictionary : Controller
     }
 
     [HttpGet("icd10")]
-    public async Task<IActionResult> GetIcd10(string name, int pageNumber, int pageSize)
+    public async Task<IActionResult> GetIcd10([FromQuery(Name = "name")] string? name = null,
+        [FromQuery(Name = "pageNuber")] int pageNumber = 1,
+        [FromQuery(Name = "pageSize")] int pageSize = 1)
     {
         var listIcd = await _dictionaryService.FullListIcd();
         int totalCount = await _dictionaryService.returnLenghtTable();
