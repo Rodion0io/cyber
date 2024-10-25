@@ -27,15 +27,13 @@ public static class AuthExtensions
 
                 
                 //Фрагмент выдал чат-гпт
-                // Добавляем обработчик событий для проверки токенов в черном списке
                 o.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = async context =>
                     {
                         var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                         var doctorService = context.HttpContext.RequestServices.GetRequiredService<IDoctorServic>();
-
-                        // Проверяем, есть ли токен в черном списке через сервис
+                        
                         if (await doctorService.InBlackList(token))
                         {
                             context.Fail("This token is blacklisted.");

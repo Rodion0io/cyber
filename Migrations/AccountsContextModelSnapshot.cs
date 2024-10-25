@@ -78,32 +78,39 @@ namespace hospital_api.Migrations
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("ID");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<int?>("actual")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("ACTUAL");
 
                     b.Property<string>("code")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("MKB_CODE");
 
                     b.Property<DateTime>("createTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("date")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<string>("date")
+                        .HasColumnType("text")
+                        .HasColumnName("DATE");
 
                     b.Property<string>("name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("MKB_NAME");
 
                     b.Property<string>("parentId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("ID_PARENT");
 
                     b.Property<string>("recCode")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("REC_CODE");
 
                     b.HasKey("id");
 

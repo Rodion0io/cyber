@@ -91,11 +91,11 @@ using (var scope = app.Services.CreateScope())
 // using (var scope = app.Services.CreateScope())
 // {
 //     var context = scope.ServiceProvider.GetRequiredService<AccountsContext>();
-//     await context.Database.ExecuteSqlRawAsync("DELETE FROM \"Icd\";");
 //
 //     var dictionaryServic = scope.ServiceProvider.GetRequiredService<IDictionaryServic>();
 //     string jsonFilePath = "/Users/rodionrybko/RiderProjects/hospital_api/hospital_api/1.2.643.5.1.13.13.11.1005_2.27.json";
-//     await dictionaryServic.AddIcd10ModelsFromJson(jsonFilePath);
+//     var list = await dictionaryServic.Icd10ModelsFromJson(jsonFilePath);
+//     await dictionaryServic.AddIcd10(list);
 // }
 
 app.UseAuthentication();

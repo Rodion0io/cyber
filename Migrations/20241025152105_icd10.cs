@@ -16,19 +16,19 @@ namespace hospital_api.Migrations
                 name: "Icd",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
+                    ID = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    REC_CODE = table.Column<string>(type: "text", nullable: true),
                     createTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    code = table.Column<string>(type: "text", nullable: false),
-                    name = table.Column<string>(type: "text", nullable: false),
-                    recCode = table.Column<string>(type: "text", nullable: true),
-                    parentId = table.Column<string>(type: "text", nullable: true),
-                    actual = table.Column<int>(type: "integer", nullable: true),
-                    date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    MKB_CODE = table.Column<string>(type: "text", nullable: false),
+                    MKB_NAME = table.Column<string>(type: "text", nullable: false),
+                    ID_PARENT = table.Column<string>(type: "text", nullable: true),
+                    ACTUAL = table.Column<int>(type: "integer", nullable: true),
+                    DATE = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Icd", x => x.id);
+                    table.PrimaryKey("PK_Icd", x => x.ID);
                 });
         }
 

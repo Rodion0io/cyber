@@ -69,7 +69,7 @@ public class Dictionary : Controller
             current = pageNumber,
             count = totalPages
         };
-
+    
         Icd10SearchModel result = new Icd10SearchModel
         {
             records = items,

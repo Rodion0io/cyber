@@ -76,18 +76,22 @@ public class DictionaryRepository : IDictionaryRepository
         return await _context.Specialities.ToListAsync();
     }
 
-    public async Task AddIcd10Models(Icd10Model icd10Models)
+    public async Task AddIcd10Models(List<Icd10Model> icd10Models)
     {
-        await _context.Icd.AddAsync(icd10Models);
+        await _context.Icd.AddRangeAsync(icd10Models);
         await _context.SaveChangesAsync();
     }
 
+    
+    //
     public async Task<int> GetSizeTable()
     {
         int result = await _context.Icd.CountAsync();
         return result;
     }
     
+    
+    //
     public async Task<List<Icd10RecordModel>> getFullListIcd10()
     {
         return await _context.Icd
@@ -101,6 +105,8 @@ public class DictionaryRepository : IDictionaryRepository
             .ToListAsync();
     }
 
+    
+    //
     public async Task<List<Icd10RecordModel>> getFullListIcd10Roots()
     {
         return await _context.Icd.Where(i => i.parentId == null)
@@ -111,5 +117,6 @@ public class DictionaryRepository : IDictionaryRepository
                 code = i.code,
                 name = i.name
             }).ToListAsync();
+        
     }
 }
