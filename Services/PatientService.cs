@@ -24,4 +24,9 @@ public class PatientService : IPatientService
 
         await _patientRepository.AddPatient(patient);
     }
+
+    public async Task<PatientModel> GetPatient(string id)
+    {
+        return await _patientRepository.FindPatient(id);
+    }
 }

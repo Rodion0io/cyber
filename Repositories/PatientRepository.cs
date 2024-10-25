@@ -19,4 +19,11 @@ public class PatientRepository : IPatientRepository
         await _context.Patients.AddAsync(model);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<PatientModel> FindPatient(string id)
+    {
+        PatientModel result = await _context.Patients.FindAsync(Guid.Parse(id));
+
+        return result;
+    }
 }

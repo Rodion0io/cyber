@@ -48,6 +48,12 @@ namespace hospital_api.Controllers
             }
         }
 
-        
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetPatient(string id)
+        {
+            PatientModel result = await _patientService.GetPatient(id);
+            return Ok(result);
+        }
     }
 }
