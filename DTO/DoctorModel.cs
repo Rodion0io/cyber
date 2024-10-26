@@ -6,7 +6,7 @@ namespace hospital_api.Modules;
 public class DoctorModel
 {
     [Required]
-    public string id { get; set; }
+    public Guid id { get; set; }
     [Required]
     public string createTime { get; set; }
     [Required]

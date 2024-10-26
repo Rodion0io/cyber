@@ -116,7 +116,7 @@ public class DoctorServic : IDoctorServic
         
         DoctorModel result = new DoctorModel
         {
-            id = (doctor.id).ToString(),
+            id = (doctor.id),
             createTime = (doctor.createTime).ToString(),
             name = doctor.name,
             birthday = (doctor.birthday).ToString(),

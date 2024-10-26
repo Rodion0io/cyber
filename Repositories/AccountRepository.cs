@@ -34,7 +34,7 @@ public class AccountRepository : IAccountRepository
     {
         return _context.Doctors.Select(x => new DoctorModel
         {
-            id = (x.id).ToString(),
+            id = x.id,
             createTime = (x.createTime).ToString(),
             name = x.name,
             birthday = (x.birthday).ToString(),

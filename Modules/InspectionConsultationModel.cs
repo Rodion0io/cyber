@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace hospital_api.Modules;
 
@@ -10,6 +11,8 @@ public class InspectionConsultationModel
     public DateTime createTime { get; set; } = DateTime.UtcNow;
     public Guid inspectionId { get; set; }
     public SpecialityModel speciality { get; set; }
-    // public InspectionCommentModel rootComment { get; set; } нужно добавить этот класс
+    [ForeignKey("DoctorModel")]
+    public Guid rootComment { get; set; }
+    public InspectionCommentModel InspectionCommentModel { get; set; }
     public int commentsNumber { get; set; }
 }
