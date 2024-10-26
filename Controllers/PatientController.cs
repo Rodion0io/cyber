@@ -48,6 +48,13 @@ namespace hospital_api.Controllers
             }
         }
 
+        [HttpPost("{id}/inspections")]
+        [Authorize]
+        public async Task<IActionResult> PostPatientInspection([FromBody] PatientCreateModel model) // пока что это передаем
+        {
+            return Ok();
+        } 
+
         [HttpGet("{id}")]
         [Authorize]
         public async Task<IActionResult> GetPatient(string id)
