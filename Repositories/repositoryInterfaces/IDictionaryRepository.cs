@@ -11,4 +11,6 @@ public interface IDictionaryRepository
     public Task<int> GetSizeTable();
     public Task<List<Icd10RecordModel>> getFullListIcd10();
     public Task<List<Icd10RecordModel>> getFullListIcd10Roots();
+    public Task<string> getIcd10Name(string id);
+    public Task<string> getIcd10Code(string id);
 }

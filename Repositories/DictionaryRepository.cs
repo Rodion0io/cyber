@@ -52,25 +52,26 @@ public class DictionaryRepository : IDictionaryRepository
     // Тоже вопрос, метод должен быть как void???
     public void Add()
     {
-
+    
         if (_context.Specialities.Count() != 0)
         {
             _context.Specialities.RemoveRange(_context.Specialities.ToList());
         }
-
+    
         foreach (var speciality in specialites)
         {
             var newSpeciality = new SpecialityModel
             {
                 name = speciality.Key,
-                id = speciality.Value,
+                // id = speciality.Value,
+                id = Guid.Parse(speciality.Value),
                 createTime = DateTime.UtcNow
             };
             _context.Specialities.AddAsync(newSpeciality);
         }
         _context.SaveChanges();
     }
-
+    
     public async Task<List<SpecialityModel>> getFullListSpeciality()
     {
         return await _context.Specialities.ToListAsync();
@@ -81,7 +82,7 @@ public class DictionaryRepository : IDictionaryRepository
         await _context.Icd.AddRangeAsync(icd10Models);
         await _context.SaveChangesAsync();
     }
-
+    
     
     //
     public async Task<int> GetSizeTable()
@@ -104,7 +105,7 @@ public class DictionaryRepository : IDictionaryRepository
             })
             .ToListAsync();
     }
-
+    
     
     //
     public async Task<List<Icd10RecordModel>> getFullListIcd10Roots()
@@ -117,6 +118,19 @@ public class DictionaryRepository : IDictionaryRepository
                 code = i.code,
                 name = i.name
             }).ToListAsync();
-        
     }
+
+    public async Task<string> getIcd10Name(string id)
+    {
+        var result = await _context.Icd.FindAsync(id);
+        return result.name;
+    }
+
+    public async Task<string> getIcd10Code(string id)
+    {
+        var result = await _context.Icd.FindAsync(id);
+        return result.code;
+    }
+    
+    // Ленивая иницализация связей
 }

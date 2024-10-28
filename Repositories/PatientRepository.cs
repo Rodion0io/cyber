@@ -19,11 +19,48 @@ public class PatientRepository : IPatientRepository
         await _context.Patients.AddAsync(model);
         await _context.SaveChangesAsync();
     }
-
+    
     public async Task<PatientModel> FindPatient(string id)
     {
         PatientModel result = await _context.Patients.FindAsync(Guid.Parse(id));
-
+    
         return result;
+    }
+
+    public async Task<Inspection> FindInspection(Guid id)
+    {
+        var result = await _context.Inspections.FindAsync(id);
+        if (result != null)
+        {
+            return result;
+        }
+        else
+        {
+            throw new KeyNotFoundException("Error!");
+        }
+    }
+
+    public async Task AddInspection(Inspection model)
+    {
+        await _context.Inspections.AddAsync(model);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task AddComments(Comment model)
+    {
+        await _context.Comments.AddAsync(model);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task AddDiagnosis(Diagnosis model)
+    {
+        await _context.Diagnosis.AddAsync(model);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task AddConsultation(Consultation model)
+    {
+        await _context.Consultations.AddAsync(model);
+        await _context.SaveChangesAsync();
     }
 }

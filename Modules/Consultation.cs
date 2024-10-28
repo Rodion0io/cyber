@@ -3,16 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace hospital_api.Modules;
 
-public class InspectionConsultationModel
+public class Consultation
 {
     [Required]
     public Guid id { get; set; }
     [Required]
     public DateTime createTime { get; set; } = DateTime.UtcNow;
     public Guid inspectionId { get; set; }
-    public SpecialityModel speciality { get; set; }
-    [ForeignKey("DoctorModel")]
-    public Guid rootComment { get; set; }
-    public InspectionCommentModel InspectionCommentModel { get; set; }
-    public int commentsNumber { get; set; }
+    [ForeignKey("SpecialityModel")]
+    public Guid specialityId { get; set; }
+    public SpecialityModel SpecialityModel { get; set; }
 }

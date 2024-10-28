@@ -12,8 +12,8 @@ using hospital_api.Dates;
 namespace hospital_api.Migrations
 {
     [DbContext(typeof(AccountsContext))]
-    [Migration("20241019142516_blackList")]
-    partial class blackList
+    [Migration("20241027114643_BlackListTokens")]
+    partial class BlackListTokens
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -79,8 +79,9 @@ namespace hospital_api.Migrations
 
             modelBuilder.Entity("hospital_api.Modules.SpecialityModel", b =>
                 {
-                    b.Property<string>("id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("createTime")
                         .HasColumnType("timestamp with time zone");

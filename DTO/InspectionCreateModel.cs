@@ -6,7 +6,7 @@ namespace hospital_api.Modules;
 public class InspectionCreateModel
 {
     [Required]
-    public DateTime date { get; set; } // видимо здесь придется делать проверку, чтобы время не было ранше, чем время поля createTime в модели InspectionModel
+    public DateTime date { get; set; }
     [Required]
     [MinLength(1)]
     [MaxLength(5000)]
@@ -21,11 +21,12 @@ public class InspectionCreateModel
     public string treatment { get; set; }
     [Required]
     public Conclusion conclusion { get; set; }
-    public DateTime nextVisitDate { get; set; } // зависит от Disease conclusion
+    public DateTime nextVisitDate { get; set; }
     public DateTime deathDate { get; set; }
-    public Guid previosInspectionId { get; set; }
+    public Guid previousInspectionId { get; set; }
     [Required]
     [MinLength(1)]
-    public DiagnosisCreateModel diagnosis { get; set; }
-    public ConsultationCreateModel consultations { get; set; }
+    public DiagnosisCreateModel[] diagnosis { get; set; }
+    public ConsultationCreateModel[] consultations { get; set; }
+
 }

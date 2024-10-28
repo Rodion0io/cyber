@@ -26,7 +26,7 @@ public class Dictionary : Controller
         
         //вот так нельзя вызывать. движок метода GetFullSpeciaityTable
         var listSpeciality = await _dictionaryService.GetFullSpeciaityTable();
-
+    
         // Это высчитывает значение count
         int totalPages = (int)Math.Ceiling(18 / (double)pageSize);
         
@@ -43,13 +43,13 @@ public class Dictionary : Controller
             current = pageNumber,
             count = totalPages
         };
-
+    
         SpecialtiesPagedListModel result = new SpecialtiesPagedListModel
         {
             specialties = items,
             pagintaion = pagination
         };
-
+    
         return Ok(result);
     }
 
@@ -78,7 +78,7 @@ public class Dictionary : Controller
         
         return Ok(result);
     }
-
+    
     [HttpGet("icd10/roots")]
     public async Task<IActionResult> GetIcd10Roots()
     {

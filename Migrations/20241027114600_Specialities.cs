@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace hospital_api.Migrations
 {
     /// <inheritdoc />
-    public partial class speciality : Migration
+    public partial class Specialities : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,7 +15,7 @@ namespace hospital_api.Migrations
                 name: "Specialities",
                 columns: table => new
                 {
-                    id = table.Column<string>(type: "text", nullable: false),
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
                     createTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },

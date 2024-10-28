@@ -12,8 +12,8 @@ using hospital_api.Dates;
 namespace hospital_api.Migrations
 {
     [DbContext(typeof(AccountsContext))]
-    [Migration("20241025152105_icd10")]
-    partial class icd10
+    [Migration("20241027114712_Icd")]
+    partial class Icd
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -146,8 +146,9 @@ namespace hospital_api.Migrations
 
             modelBuilder.Entity("hospital_api.Modules.SpecialityModel", b =>
                 {
-                    b.Property<string>("id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("createTime")
                         .HasColumnType("timestamp with time zone");

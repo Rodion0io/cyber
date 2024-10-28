@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using hospital_api.Modules;
 using hospital_api.Services;
@@ -14,10 +15,12 @@ namespace hospital_api.Controllers
     {
         
         private readonly IPatientService _patientService;
+        private readonly IJWTService _jwtService;
 
-        public PatientController(IPatientService patientService)
+        public PatientController(IPatientService patientService, IJWTService jwtService)
         {
             _patientService = patientService;
+            _jwtService = jwtService;
         }
         
         [HttpPost]
@@ -28,7 +31,7 @@ namespace hospital_api.Controllers
             {
                 return BadRequest("Model is null");
             }
-
+        
             try
             {
                 await _patientService.RegistrationPatient(model);
@@ -47,14 +50,20 @@ namespace hospital_api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred: " + ex.Message);
             }
         }
-
+        
         [HttpPost("{id}/inspections")]
         [Authorize]
-        public async Task<IActionResult> PostPatientInspection([FromBody] PatientCreateModel model) // пока что это передаем
+        public async Task<IActionResult> PostPatientInspection(Guid id, [FromBody] InspectionCreateModel model)
         {
+            var authHeader = HttpContext.Request.Headers["Authorization"];
+            string token = authHeader.ToString().Split(" ")[1];
+            //Нужно поменять в модели доктора string на guid
+            Guid Id = Guid.Parse(_jwtService.DecodeToken((token).ToString()).Claims.ToArray()[2].Value);
+            string name = _jwtService.DecodeToken((token).ToString()).Claims.ToArray()[0].Value;
+            await _patientService.AddInpection(model, Id, id, name);
             return Ok();
         } 
-
+        
         [HttpGet("{id}")]
         [Authorize]
         public async Task<IActionResult> GetPatient(string id)

@@ -5,7 +5,7 @@
 namespace hospital_api.Migrations
 {
     /// <inheritdoc />
-    public partial class blackList : Migration
+    public partial class BlackListTokens : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

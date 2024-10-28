@@ -6,21 +6,43 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace hospital_api.Migrations
 {
     /// <inheritdoc />
-    public partial class Diagnosis : Migration
+    public partial class inspectMigr : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Consultations",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    createTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    inspectionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    specialityId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Consultations", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Consultations_Specialities_specialityId",
+                        column: x => x.specialityId,
+                        principalTable: "Specialities",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Diagnosis",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     createTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    code = table.Column<string>(type: "text", nullable: false),
+                    code = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
-                    description = table.Column<string>(type: "text", nullable: false),
-                    type = table.Column<int>(type: "integer", nullable: false)
+                    description = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: false),
+                    type = table.Column<int>(type: "integer", nullable: false),
+                    icdDiagnosisId = table.Column<Guid>(type: "uuid", nullable: false),
+                    inspectionId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -45,57 +67,31 @@ namespace hospital_api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "InspectionComment",
+                name: "Comments",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     createTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    parentId = table.Column<Guid>(type: "uuid", nullable: false),
+                    modifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     content = table.Column<string>(type: "text", nullable: false),
-                    author = table.Column<Guid>(type: "uuid", nullable: false),
-                    modifyTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    authorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    author = table.Column<string>(type: "text", nullable: false),
+                    parentId = table.Column<Guid>(type: "uuid", nullable: false),
+                    consultationId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_InspectionComment", x => x.id);
+                    table.PrimaryKey("PK_Comments", x => x.id);
                     table.ForeignKey(
-                        name: "FK_InspectionComment_DoctorModel_author",
-                        column: x => x.author,
-                        principalTable: "DoctorModel",
+                        name: "FK_Comments_Consultations_consultationId",
+                        column: x => x.consultationId,
+                        principalTable: "Consultations",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "InspectionConsultation",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    createTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    inspectionId = table.Column<Guid>(type: "uuid", nullable: false),
-                    specialityid = table.Column<string>(type: "text", nullable: true),
-                    rootComment = table.Column<Guid>(type: "uuid", nullable: false),
-                    InspectionCommentModelid = table.Column<Guid>(type: "uuid", nullable: false),
-                    commentsNumber = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_InspectionConsultation", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_InspectionConsultation_InspectionComment_InspectionCommentM~",
-                        column: x => x.InspectionCommentModelid,
-                        principalTable: "InspectionComment",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_InspectionConsultation_Specialities_specialityid",
-                        column: x => x.specialityid,
-                        principalTable: "Specialities",
-                        principalColumn: "id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Inspection",
+                name: "Inspections",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -110,33 +106,19 @@ namespace hospital_api.Migrations
                     baseInspectionId = table.Column<Guid>(type: "uuid", nullable: false),
                     previousInspectionId = table.Column<Guid>(type: "uuid", nullable: false),
                     patient = table.Column<Guid>(type: "uuid", nullable: false),
-                    doctor = table.Column<Guid>(type: "uuid", nullable: false),
-                    diagnoses = table.Column<Guid>(type: "uuid", nullable: false),
-                    consultations = table.Column<Guid>(type: "uuid", nullable: false)
+                    doctor = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Inspection", x => x.id);
+                    table.PrimaryKey("PK_Inspections", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Inspection_Diagnosis_diagnoses",
-                        column: x => x.diagnoses,
-                        principalTable: "Diagnosis",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Inspection_DoctorModel_doctor",
+                        name: "FK_Inspections_DoctorModel_doctor",
                         column: x => x.doctor,
                         principalTable: "DoctorModel",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Inspection_InspectionConsultation_consultations",
-                        column: x => x.consultations,
-                        principalTable: "InspectionConsultation",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Inspection_Patients_patient",
+                        name: "FK_Inspections_Patients_patient",
                         column: x => x.patient,
                         principalTable: "Patients",
                         principalColumn: "id",
@@ -144,55 +126,40 @@ namespace hospital_api.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Inspection_consultations",
-                table: "Inspection",
-                column: "consultations");
+                name: "IX_Comments_consultationId",
+                table: "Comments",
+                column: "consultationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Inspection_diagnoses",
-                table: "Inspection",
-                column: "diagnoses");
+                name: "IX_Consultations_specialityId",
+                table: "Consultations",
+                column: "specialityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Inspection_doctor",
-                table: "Inspection",
+                name: "IX_Inspections_doctor",
+                table: "Inspections",
                 column: "doctor");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Inspection_patient",
-                table: "Inspection",
+                name: "IX_Inspections_patient",
+                table: "Inspections",
                 column: "patient");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_InspectionComment_author",
-                table: "InspectionComment",
-                column: "author");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_InspectionConsultation_InspectionCommentModelid",
-                table: "InspectionConsultation",
-                column: "InspectionCommentModelid");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_InspectionConsultation_specialityid",
-                table: "InspectionConsultation",
-                column: "specialityid");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Inspection");
+                name: "Comments");
 
             migrationBuilder.DropTable(
                 name: "Diagnosis");
 
             migrationBuilder.DropTable(
-                name: "InspectionConsultation");
+                name: "Inspections");
 
             migrationBuilder.DropTable(
-                name: "InspectionComment");
+                name: "Consultations");
 
             migrationBuilder.DropTable(
                 name: "DoctorModel");

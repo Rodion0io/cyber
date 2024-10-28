@@ -4,7 +4,7 @@ using hospital_api.Enums;
 
 namespace hospital_api.Modules;
 
-public class InspectionModel
+public class Inspection
 {
     [Required]
     public Guid id { get; set; }
@@ -22,13 +22,7 @@ public class InspectionModel
     [ForeignKey("PatientModel")]
     public Guid patient { get; set; }
     public PatientModel PatientModel { get; set; }
-    [ForeignKey("DoctorModel")]
+    [ForeignKey("Doctor")]
     public Guid doctor { get; set; }
-    public DoctorModel DoctorModel { get; set; }
-    [ForeignKey("DiagnosisModel")]
-    public Guid diagnoses { get; set; }
-    public DiagnosisModel DiagnosisModel { get; set; }
-    [ForeignKey("InspectionConsultationModel")]
-    public Guid consultations { get; set; }
-    public InspectionConsultationModel InspectionConsultationModel { get; set; }
+    public Doctor Doctor { get; set; }
 }

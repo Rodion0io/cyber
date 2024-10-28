@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace hospital_api.Migrations
 {
     /// <inheritdoc />
-    public partial class icd10 : Migration
+    public partial class Icd : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -83,11 +83,11 @@ public class AccountRepository : IAccountRepository
         await _context.BlackListTokens.AddAsync(tokens);
         await _context.SaveChangesAsync();
     }
-
+    
     public async Task<bool> FindTokenInBlackList(string token)
     {
         bool value = await _context.BlackListTokens.AnyAsync(x => x.token == token);
-
+    
         if (value)
         {
             return true;

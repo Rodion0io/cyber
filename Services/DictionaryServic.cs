@@ -26,7 +26,7 @@ public class DictionaryServic : IDictionaryServic
     {
         return await _dictionaryRepository.getFullListSpeciality();
     }
-
+    
     public async Task<List<Icd10Model>> Icd10ModelsFromJson(string jsonFilePath)
     {
         string jsonString = await File.ReadAllTextAsync(jsonFilePath);
@@ -35,12 +35,12 @@ public class DictionaryServic : IDictionaryServic
         
         return records;
     }
-
+    
     public async Task AddIcd10(List<Icd10Model> records)
     {
         await _dictionaryRepository.AddIcd10Models(records);
     }
-
+    
     public async Task<int> returnLenghtTable()
     {
         return await _dictionaryRepository.GetSizeTable();

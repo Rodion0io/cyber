@@ -12,8 +12,8 @@ using hospital_api.Dates;
 namespace hospital_api.Migrations
 {
     [DbContext(typeof(AccountsContext))]
-    [Migration("20241026182158_Inspection")]
-    partial class Inspection
+    [Migration("20241028103531_inspectMigr")]
+    partial class inspectMigr
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,22 +39,86 @@ namespace hospital_api.Migrations
                     b.ToTable("BlackListTokens");
                 });
 
-            modelBuilder.Entity("hospital_api.Modules.DiagnosisModel", b =>
+            modelBuilder.Entity("hospital_api.Modules.Comment", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("code")
+                    b.Property<string>("author")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("authorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("consultationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("content")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("createTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("parentId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("consultationId");
+
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("hospital_api.Modules.Consultation", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("createTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("inspectionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("specialityId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("specialityId");
+
+                    b.ToTable("Consultations");
+                });
+
+            modelBuilder.Entity("hospital_api.Modules.Diagnosis", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("code")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("createTime")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
+
+                    b.Property<Guid>("icdDiagnosisId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("inspectionId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("name")
                         .IsRequired()
@@ -181,69 +245,7 @@ namespace hospital_api.Migrations
                     b.ToTable("Icd");
                 });
 
-            modelBuilder.Entity("hospital_api.Modules.InspectionCommentModel", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("author")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("content")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("createTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("modifyTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("parentId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("author");
-
-                    b.ToTable("InspectionComment");
-                });
-
-            modelBuilder.Entity("hospital_api.Modules.InspectionConsultationModel", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("InspectionCommentModelid")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("commentsNumber")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("createTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("inspectionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("rootComment")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("specialityid")
-                        .HasColumnType("text");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("InspectionCommentModelid");
-
-                    b.HasIndex("specialityid");
-
-                    b.ToTable("InspectionConsultation");
-                });
-
-            modelBuilder.Entity("hospital_api.Modules.InspectionModel", b =>
+            modelBuilder.Entity("hospital_api.Modules.Inspection", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
@@ -263,9 +265,6 @@ namespace hospital_api.Migrations
                     b.Property<int>("conclusion")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("consultations")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("createTime")
                         .HasColumnType("timestamp with time zone");
 
@@ -274,9 +273,6 @@ namespace hospital_api.Migrations
 
                     b.Property<DateTime>("deathDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("diagnoses")
-                        .HasColumnType("uuid");
 
                     b.Property<Guid>("doctor")
                         .HasColumnType("uuid");
@@ -296,15 +292,11 @@ namespace hospital_api.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("consultations");
-
-                    b.HasIndex("diagnoses");
-
                     b.HasIndex("doctor");
 
                     b.HasIndex("patient");
 
-                    b.ToTable("Inspection");
+                    b.ToTable("Inspections");
                 });
 
             modelBuilder.Entity("hospital_api.Modules.PatientModel", b =>
@@ -333,8 +325,9 @@ namespace hospital_api.Migrations
 
             modelBuilder.Entity("hospital_api.Modules.SpecialityModel", b =>
                 {
-                    b.Property<string>("id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("createTime")
                         .HasColumnType("timestamp with time zone");
@@ -348,48 +341,30 @@ namespace hospital_api.Migrations
                     b.ToTable("Specialities");
                 });
 
-            modelBuilder.Entity("hospital_api.Modules.InspectionCommentModel", b =>
+            modelBuilder.Entity("hospital_api.Modules.Comment", b =>
                 {
-                    b.HasOne("hospital_api.Modules.DoctorModel", "DoctorModel")
+                    b.HasOne("hospital_api.Modules.Consultation", "Consultation")
                         .WithMany()
-                        .HasForeignKey("author")
+                        .HasForeignKey("consultationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("DoctorModel");
+                    b.Navigation("Consultation");
                 });
 
-            modelBuilder.Entity("hospital_api.Modules.InspectionConsultationModel", b =>
+            modelBuilder.Entity("hospital_api.Modules.Consultation", b =>
                 {
-                    b.HasOne("hospital_api.Modules.InspectionCommentModel", "InspectionCommentModel")
+                    b.HasOne("hospital_api.Modules.SpecialityModel", "SpecialityModel")
                         .WithMany()
-                        .HasForeignKey("InspectionCommentModelid")
+                        .HasForeignKey("specialityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("hospital_api.Modules.SpecialityModel", "speciality")
-                        .WithMany()
-                        .HasForeignKey("specialityid");
-
-                    b.Navigation("InspectionCommentModel");
-
-                    b.Navigation("speciality");
+                    b.Navigation("SpecialityModel");
                 });
 
-            modelBuilder.Entity("hospital_api.Modules.InspectionModel", b =>
+            modelBuilder.Entity("hospital_api.Modules.Inspection", b =>
                 {
-                    b.HasOne("hospital_api.Modules.InspectionConsultationModel", "InspectionConsultationModel")
-                        .WithMany()
-                        .HasForeignKey("consultations")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("hospital_api.Modules.DiagnosisModel", "DiagnosisModel")
-                        .WithMany()
-                        .HasForeignKey("diagnoses")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("hospital_api.Modules.DoctorModel", "DoctorModel")
                         .WithMany()
                         .HasForeignKey("doctor")
@@ -402,11 +377,7 @@ namespace hospital_api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("DiagnosisModel");
-
                     b.Navigation("DoctorModel");
-
-                    b.Navigation("InspectionConsultationModel");
 
                     b.Navigation("PatientModel");
                 });

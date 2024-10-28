@@ -6,6 +6,7 @@ public class ConsultationCreateModel
 {
     [Required]
     public Guid specialityId { get; set; }
-    [Required]
+    
+    //Очень сомнительно
     public InspectionCommentCreateModel comment { get; set; }
 }
