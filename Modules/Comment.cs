@@ -19,5 +19,5 @@ public class Comment
     public Guid parentId { get; set; }
     [ForeignKey("Consultation")]
     public Guid consultationId { get; set; }
-    public Consultation Consultation { get; set; }
+    public virtual Consultation Consultation { get; set; }
 }

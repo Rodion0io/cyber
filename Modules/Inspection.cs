@@ -15,14 +15,14 @@ public class Inspection
     public string complaints { get; set; }
     public string treatment { get; set; }
     public Conclusion conclusion { get; set; }
-    public DateTime nextVisitDate { get; set; }
-    public DateTime deathDate { get; set; }
-    public Guid baseInspectionId { get; set; }
-    public Guid previousInspectionId { get; set; }
+    public DateTime? nextVisitDate { get; set; }
+    public DateTime? deathDate { get; set; }
+    public Guid? baseInspectionId { get; set; }
+    public Guid? previousInspectionId { get; set; }
     [ForeignKey("PatientModel")]
     public Guid patient { get; set; }
-    public PatientModel PatientModel { get; set; }
+    public virtual PatientModel PatientModel { get; set; }
     [ForeignKey("Doctor")]
     public Guid doctor { get; set; }
-    public Doctor Doctor { get; set; }
+    public virtual Doctor Doctor { get; set; }
 }

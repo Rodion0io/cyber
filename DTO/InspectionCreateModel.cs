@@ -21,9 +21,9 @@ public class InspectionCreateModel
     public string treatment { get; set; }
     [Required]
     public Conclusion conclusion { get; set; }
-    public DateTime nextVisitDate { get; set; }
-    public DateTime deathDate { get; set; }
-    public Guid previousInspectionId { get; set; }
+    public DateTime? nextVisitDate { get; set; }
+    public DateTime? deathDate { get; set; }
+    public Guid? previousInspectionId { get; set; }
     [Required]
     [MinLength(1)]
     public DiagnosisCreateModel[] diagnosis { get; set; }

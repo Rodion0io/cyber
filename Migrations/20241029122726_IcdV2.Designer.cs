@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using hospital_api.Dates;
@@ -11,9 +12,11 @@ using hospital_api.Dates;
 namespace hospital_api.Migrations
 {
     [DbContext(typeof(AccountsContext))]
-    partial class AccountsContextModelSnapshot : ModelSnapshot
+    [Migration("20241029122726_IcdV2")]
+    partial class IcdV2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -222,7 +225,7 @@ namespace hospital_api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("baseInspectionId")
+                    b.Property<Guid>("baseInspectionId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("complaints")
@@ -238,19 +241,19 @@ namespace hospital_api.Migrations
                     b.Property<DateTime>("date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("deathDate")
+                    b.Property<DateTime>("deathDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("doctor")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("nextVisitDate")
+                    b.Property<DateTime>("nextVisitDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("patient")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("previousInspectionId")
+                    b.Property<Guid>("previousInspectionId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("treatment")

@@ -6,9 +6,11 @@ namespace hospital_api.Modules;
 
 public class Icd10Model
 {
+
+    
     
     [Key]
-    public Guid Id { get; set; }
+    public Guid secondKey { get; set; }
     [Column("ID")]
     [JsonProperty("ID")]
     public int id { get; set; }

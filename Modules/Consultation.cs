@@ -12,5 +12,5 @@ public class Consultation
     public Guid inspectionId { get; set; }
     [ForeignKey("SpecialityModel")]
     public Guid specialityId { get; set; }
-    public SpecialityModel SpecialityModel { get; set; }
+    public virtual SpecialityModel SpecialityModel { get; set; }
 }

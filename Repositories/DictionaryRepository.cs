@@ -98,6 +98,7 @@ public class DictionaryRepository : IDictionaryRepository
         return await _context.Icd
             .Select(i => new Icd10RecordModel
             {
+                secondKey = i.secondKey,
                 id = i.id,
                 createTime = i.createTime,
                 code = i.code,
@@ -111,22 +112,24 @@ public class DictionaryRepository : IDictionaryRepository
     public async Task<List<Icd10RecordModel>> getFullListIcd10Roots()
     {
         return await _context.Icd.Where(i => i.parentId == null)
-            .Select(i => new Icd10RecordModel
-            {
-                id = i.id,
-                createTime = i.createTime,
-                code = i.code,
-                name = i.name
-            }).ToListAsync();
+        .Select(i => new Icd10RecordModel
+        {
+            secondKey = i.secondKey,
+            id = i.id,
+            createTime = i.createTime,
+            code = i.code,
+            name = i.name
+        }).ToListAsync();
+        
     }
 
-    public async Task<string> getIcd10Name(string id)
+    public async Task<string> getIcd10Name(Guid id)
     {
         var result = await _context.Icd.FindAsync(id);
         return result.name;
     }
 
-    public async Task<string> getIcd10Code(string id)
+    public async Task<string> getIcd10Code(Guid id)
     {
         var result = await _context.Icd.FindAsync(id);
         return result.code;

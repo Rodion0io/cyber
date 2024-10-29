@@ -27,7 +27,7 @@ public class PatientRepository : IPatientRepository
         return result;
     }
 
-    public async Task<Inspection> FindInspection(Guid id)
+    public async Task<Inspection> FindInspection(Guid? id)
     {
         var result = await _context.Inspections.FindAsync(id);
         if (result != null)
@@ -36,7 +36,7 @@ public class PatientRepository : IPatientRepository
         }
         else
         {
-            throw new KeyNotFoundException("Error!");
+            return null;
         }
     }
 

@@ -39,6 +39,13 @@ public class PatientService : IPatientService
     public async Task AddInpection(InspectionCreateModel model, Guid patintId, Guid doctorId, string doctorName)
     {
 
+        // bool firstChecker = checkPrevInspection(model);
+        // bool secondChecker = await checkTimeNewInspection(model);
+        // bool thirdChecker = CheckConclusion(model);
+        // bool fourthChecker = CheckTypeDiagnosis(model);
+        // bool fifthChecker = CheckAllSpecialities(model);
+        // bool sixthChecker = await CheckDethPatient(model);
+        
         Inspection newInspection = new Inspection
         {
             // надо добавить baseInspectionId
@@ -54,12 +61,14 @@ public class PatientService : IPatientService
             doctor = doctorId
         };
 
+        await _patientRepository.AddInspection(newInspection);
+        
         foreach (var diagnosis in model.diagnosis)
         {
             Diagnosis newDiagnosis = new Diagnosis
             {
-                code = await _dictionaryRepository.getIcd10Code((diagnosis.icdDiagnosisId).ToString()),
-                name = await _dictionaryRepository.getIcd10Name((diagnosis.icdDiagnosisId).ToString()),
+                code = await _dictionaryRepository.getIcd10Code((diagnosis.icdDiagnosisId)),
+                name = await _dictionaryRepository.getIcd10Name((diagnosis.icdDiagnosisId)),
                 description = diagnosis.description,
                 type = diagnosis.type,
                 icdDiagnosisId = diagnosis.icdDiagnosisId,
@@ -76,6 +85,8 @@ public class PatientService : IPatientService
                 inspectionId = newInspection.id,
                 specialityId = comment.specialityId
             };
+            
+            await _patientRepository.AddConsultation(newConsultation);
         
             Comment newComment = new Comment
             {
@@ -84,14 +95,8 @@ public class PatientService : IPatientService
                 author = doctorName,
                 consultationId = newConsultation.id
             };
-            
-            await _patientRepository.AddConsultation(newConsultation);
             await _patientRepository.AddComments(newComment);
         }
-
-        await _patientRepository.AddInspection(newInspection);
-
-        
     }
 
     // //Так можно задвать тип функции? Или нужно использовать Task?
@@ -109,14 +114,22 @@ public class PatientService : IPatientService
 
     public async Task<bool> checkTimeNewInspection(InspectionCreateModel model)
     {
-        var prevTime = await _patientRepository.FindInspection(model.previousInspectionId);
 
-        if (prevTime != null)
+        if (model.previousInspectionId != null)
         {
-            int compareTime = DateTime.Compare(model.date, prevTime.date);
-            if (compareTime > 0)
+            var prevTime = await _patientRepository.FindInspection(model.previousInspectionId);
+    
+            if (prevTime != null)
             {
-                return true;
+                int compareTime = DateTime.Compare(model.date, prevTime.date);
+                if (compareTime > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
@@ -127,19 +140,35 @@ public class PatientService : IPatientService
         {
             return false;
         }
+        
     }
     
-    public bool CheckConclusion(InspectionCreateModel model)
+    public int CheckConclusion(InspectionCreateModel model)
     {
-        if ((model.conclusion == Conclusion.Disease && model.nextVisitDate != null && model.deathDate == null) ||
-            (model.conclusion == Conclusion.Death && model.nextVisitDate == null && model.deathDate != null) ||
-            (model.conclusion == Conclusion.Recovery && model.nextVisitDate == null && model.deathDate == null))
+        
+
+        if ((model.conclusion == Conclusion.Disease && model.nextVisitDate == null && model.deathDate == null) ||
+            (model.conclusion == Conclusion.Disease && model.nextVisitDate == null && model.deathDate  != null))
         {
-            return true;
+            // return BadRequest("Если диагноз 'выздоровление', дата следующего визита и дата смерти не могут быть установлены.")
+            return 1;
+        }
+        else if ((model.conclusion == Conclusion.Death && model.nextVisitDate != null && model.deathDate  == null) ||
+                 (model.conclusion == Conclusion.Death && model.nextVisitDate != null && model.deathDate  != null))
+        {
+            // return BadRequest("Если диагноз болен, то нужно назначить дату следующего визита и даты смерти быть не может");
+            return 2;
+        }
+        else if ((model.conclusion == Conclusion.Recovery && (model.nextVisitDate).ToString() != null && model.deathDate  != null) ||
+                 (model.conclusion == Conclusion.Recovery && (model.nextVisitDate).ToString() == null && model.deathDate  != null) ||
+                 (model.conclusion == Conclusion.Recovery && (model.nextVisitDate).ToString() != null && model.deathDate  == null))
+        {
+            // return BadRequest("Если диагноз болен, то нужно назначить дату следующего визита и даты смерти быть не может");
+            return 3;
         }
         else
         {
-            return false;
+            return 4;
         }
     }
     
@@ -184,15 +213,25 @@ public class PatientService : IPatientService
 
     public async Task<bool> CheckDethPatient(InspectionCreateModel model)
     {
-        var status = await _patientRepository.FindInspection(model.previousInspectionId);
 
-        if (status.conclusion == Conclusion.Death)
+        if (model.previousInspectionId != null)
         {
-            return true;
+            var status = await _patientRepository.FindInspection(model.previousInspectionId);
+    
+            if (status.conclusion == Conclusion.Death)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         else
         {
             return false;
         }
     }
+    
+    
 }
