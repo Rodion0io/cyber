@@ -106,14 +106,14 @@ public class DoctorServic : IDoctorServic
     public DoctorModel GetDoctorInfa(string id)
     {
         
-        var claimIdentifier = _jwtService.DecodeToken(id).Claims.ToArray()[2].Value;
+        // var claimIdentifier = _jwtService.DecodeToken(id).Claims.ToArray()[2].Value;
     
-        Doctor doctor = _accountRepository.FindDoctorById(claimIdentifier);
+        Doctor doctor = _accountRepository.FindDoctorById(id);
         
         DoctorModel result = new DoctorModel
         {
             id = (doctor.id),
-            createTime = (doctor.createTime).ToString(),
+            createTime = doctor.createTime,
             name = doctor.name,
             birthday = (doctor.birthday).ToString(),
             gender = doctor.gender,

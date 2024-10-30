@@ -35,7 +35,7 @@ public class AccountRepository : IAccountRepository
         return _context.Doctors.Select(x => new DoctorModel
         {
             id = x.id,
-            createTime = (x.createTime).ToString(),
+            createTime = x.createTime,
             name = x.name,
             birthday = (x.birthday).ToString(),
             gender = x.gender,
@@ -104,6 +104,8 @@ public class AccountRepository : IAccountRepository
 
         return currentDoctor;
     }
+    
+    
 
     public async Task UpdateDate(string id, DoctorEditModel newData)
     {

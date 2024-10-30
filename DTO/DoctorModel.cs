@@ -8,7 +8,7 @@ public class DoctorModel
     [Required]
     public Guid id { get; set; }
     [Required]
-    public string createTime { get; set; }
+    public DateTime createTime { get; set; }
     [Required]
     public string name { get; set; }
     public string? birthday { get; set; }

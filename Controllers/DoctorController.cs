@@ -12,10 +12,12 @@ namespace hospital_api.Controllers
     public class DoctorController : Controller
     {
         private readonly IDoctorServic _doctorServic;
+        private readonly IJWTService _jwtService;
 
-        public DoctorController(IDoctorServic doctorServic)
+        public DoctorController(IDoctorServic doctorServic, IJWTService jwtService)
         {
             _doctorServic = doctorServic;
+            _jwtService = jwtService;
         }
 
         [HttpPost("register")]
@@ -81,10 +83,11 @@ namespace hospital_api.Controllers
             // Так стоит получать id для дальнеших операций?
             var authHeader = HttpContext.Request.Headers["Authorization"];
             string token = authHeader.ToString().Split(" ")[1];
+            var claimIdentifier = _jwtService.DecodeToken(token).Claims.ToArray()[2].Value;
         
-            DoctorModel doctor = _doctorServic.GetDoctorInfa(token);
+            DoctorModel doctor = _doctorServic.GetDoctorInfa(claimIdentifier);
             
-            return Ok(_doctorServic.GetDoctorInfa(token));
+            return Ok(_doctorServic.GetDoctorInfa(claimIdentifier));
         }
         
         [HttpPut("profile")]

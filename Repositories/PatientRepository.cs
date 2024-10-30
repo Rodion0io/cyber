@@ -2,6 +2,7 @@ using hospital_api.Dates;
 using hospital_api.Modules;
 using hospital_api.Repositories.repositoryInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Repositories;
 
@@ -24,6 +25,12 @@ public class PatientRepository : IPatientRepository
     {
         PatientModel result = await _context.Patients.FindAsync(Guid.Parse(id));
     
+        return result;
+    }
+
+    public async Task<PatientModel> FindPatientByInspection(Guid id)
+    {
+        PatientModel result = await _context.Patients.FindAsync(id);
         return result;
     }
 

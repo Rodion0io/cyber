@@ -53,12 +53,14 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<DictionaryRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IDictionaryRepository, DictionaryRepository>();
+builder.Services.AddScoped<IInspectionRepository, InspectionRepository>();
 
 // Регистрация сервисов
 builder.Services.AddScoped<IDoctorServic, DoctorServic>();
 builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<IDictionaryServic, DictionaryServic>();
 builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IInspectionService, InspectionService>();
 
 // Регистрация настроек
 builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("AuthSettings"));
