@@ -36,19 +36,11 @@ public class PatientService : IPatientService
         return await _patientRepository.FindPatient(id);
     }
 
-    public async Task AddInpection(InspectionCreateModel model, Guid patintId, Guid doctorId, string doctorName)
+    public async Task<string> AddInpection(InspectionCreateModel model, Guid patintId, Guid doctorId, string doctorName)
     {
-
-        // bool firstChecker = checkPrevInspection(model);
-        // bool secondChecker = await checkTimeNewInspection(model);
-        // bool thirdChecker = CheckConclusion(model);
-        // bool fourthChecker = CheckTypeDiagnosis(model);
-        // bool fifthChecker = CheckAllSpecialities(model);
-        // bool sixthChecker = await CheckDethPatient(model);
         
         Inspection newInspection = new Inspection
         {
-            // надо добавить baseInspectionId
             date = model.date,
             anamnesis = model.anamnesis,
             complaints = model.complaints,
@@ -62,6 +54,9 @@ public class PatientService : IPatientService
         };
 
         await _patientRepository.AddInspection(newInspection);
+
+        newInspection.baseInspectionId = (newInspection.previousInspectionId == null ? newInspection.id : 
+            (await _patientRepository.FindInspection(newInspection.previousInspectionId)).baseInspectionId);
         
         foreach (var diagnosis in model.diagnosis)
         {
@@ -97,6 +92,8 @@ public class PatientService : IPatientService
             };
             await _patientRepository.AddComments(newComment);
         }
+
+        return (newInspection.id).ToString();
     }
 
     // //Так можно задвать тип функции? Или нужно использовать Task?
@@ -145,8 +142,6 @@ public class PatientService : IPatientService
     
     public int CheckConclusion(InspectionCreateModel model)
     {
-        
-
         if ((model.conclusion == Conclusion.Disease && model.nextVisitDate == null && model.deathDate == null) ||
             (model.conclusion == Conclusion.Disease && model.nextVisitDate == null && model.deathDate  != null))
         {
@@ -159,9 +154,7 @@ public class PatientService : IPatientService
             // return BadRequest("Если диагноз болен, то нужно назначить дату следующего визита и даты смерти быть не может");
             return 2;
         }
-        else if ((model.conclusion == Conclusion.Recovery && (model.nextVisitDate).ToString() != null && model.deathDate  != null) ||
-                 (model.conclusion == Conclusion.Recovery && (model.nextVisitDate).ToString() == null && model.deathDate  != null) ||
-                 (model.conclusion == Conclusion.Recovery && (model.nextVisitDate).ToString() != null && model.deathDate  == null))
+        else if (model.conclusion == Conclusion.Recovery && (model.nextVisitDate != null || model.deathDate != null))
         {
             // return BadRequest("Если диагноз болен, то нужно назначить дату следующего визита и даты смерти быть не может");
             return 3;

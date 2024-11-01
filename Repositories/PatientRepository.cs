@@ -36,7 +36,7 @@ public class PatientRepository : IPatientRepository
 
     public async Task<Inspection> FindInspection(Guid? id)
     {
-        var result = await _context.Inspections.FindAsync(id);
+        var result = await _context.Inspections.FirstOrDefaultAsync(i => i.id == id);
         if (result != null)
         {
             return result;

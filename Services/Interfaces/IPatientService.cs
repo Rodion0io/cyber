@@ -13,5 +13,5 @@ public interface IPatientService
     public bool CheckTypeDiagnosis(InspectionCreateModel model);
     public bool CheckAllSpecialities(InspectionCreateModel model);
     public Task<bool> CheckDethPatient(InspectionCreateModel model);
-    public Task AddInpection(InspectionCreateModel model, Guid patintId, Guid doctorId, string doctorName);
+    public Task<string> AddInpection(InspectionCreateModel model, Guid patintId, Guid doctorId, string doctorName);
 }

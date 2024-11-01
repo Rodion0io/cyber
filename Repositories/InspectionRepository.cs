@@ -54,4 +54,28 @@ public class InspectionRepository : IInspectionRepository
                 rootComment = _context.Comments.FirstOrDefault(c => c.consultationId == i.id)
             }).ToListAsync()).ToArray();
     }
+
+    public async Task SaveChangesInspection(Inspection changesInspection)
+    {
+        _context.Inspections.Update(changesInspection);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task ClearDiagnosis(Guid inspectionId)
+    {
+        var removeDiagnosis = await _context.Diagnosis.Where(i => i.inspectionId == inspectionId).ToListAsync();
+
+        _context.Diagnosis.RemoveRange(removeDiagnosis);
+        await _context.SaveChangesAsync();
+    }
+
+    // public async Task UpdateData(Inspection updatedModel)
+    // {
+    //     await _context.Inspections.
+    // }
+    //
+    // public async Task UpdatedDiagnosis(Diagnosis updatedDiagnosis)
+    // {
+    //     
+    // }
 }

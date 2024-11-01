@@ -18,6 +18,7 @@ public class Inspection
     public DateTime? nextVisitDate { get; set; }
     public DateTime? deathDate { get; set; }
     public Guid? baseInspectionId { get; set; }
+    
     public Guid? previousInspectionId { get; set; }
     [ForeignKey("PatientModel")]
     public Guid patient { get; set; }

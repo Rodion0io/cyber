@@ -8,6 +8,7 @@ using System.Linq;
 
 namespace hospital_api.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
     public class DoctorController : Controller
     {

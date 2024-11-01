@@ -4,10 +4,12 @@ using hospital_api.Services;
 using hospital_api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;
+using hospital_api.Enums;
 
 
 namespace hospital_api.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
     public class InspectionController : Controller
     {
@@ -27,11 +29,11 @@ namespace hospital_api.Controllers
         {
             
             var authHeader = HttpContext.Request.Headers["Authorization"];
-            Console.WriteLine(authHeader);
+            // Console.WriteLine(authHeader);
             string token = authHeader.ToString().Split(" ")[1];
-            Console.WriteLine(token);
+            // Console.WriteLine(token);
             string Id = _jwtService.DecodeToken(token).Claims.ToArray()[2].Value;
-            Console.WriteLine(Id);
+            // Console.WriteLine(Id);
 
             var result = await _inspectionService.GetInspection(id, Guid.Parse(Id));
 
@@ -43,6 +45,20 @@ namespace hospital_api.Controllers
             {
                 return Ok(result);
             }
+        }
+
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<IActionResult> EditInspection([FromBody] InspectionEditModel model, string id)
+        {
+            
+            var authHeader = HttpContext.Request.Headers["Authorization"];
+            string token = authHeader.ToString().Split(" ")[1];
+            string Id = _jwtService.DecodeToken(token).Claims.ToArray()[2].Value;
+            
+            await _inspectionService.EditInspection(Guid.Parse(id), Guid.Parse(Id), model);
+            
+            return Ok();
         }
     }
 }

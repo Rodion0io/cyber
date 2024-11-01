@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
     public class PatientController : Controller
     {
@@ -56,13 +57,11 @@ namespace hospital_api.Controllers
         [Authorize]
         public async Task<IActionResult> PostPatientInspection(Guid id, [FromBody] InspectionCreateModel model)
         {
-            Console.WriteLine($"{model}");
+            
             var authHeader = HttpContext.Request.Headers["Authorization"];
             string token = authHeader.ToString().Split(" ")[1];
             Guid Id = Guid.Parse(_jwtService.DecodeToken((token).ToString()).Claims.ToArray()[2].Value);
             string name = _jwtService.DecodeToken((token).ToString()).Claims.ToArray()[0].Value;
-            
-            
             
             
             if (_patientService.checkPrevInspection(model) && !await _patientService.checkTimeNewInspection(model))
@@ -106,6 +105,13 @@ namespace hospital_api.Controllers
         {
             PatientModel result = await _patientService.GetPatient(id);
             return Ok(result);
+        }
+
+        [HttpGet("{id}/inspections/search")]
+        [Authorize]
+        public async Task<IActionResult> SearchPatientInspection(Guid id, [FromQuery] string request)
+        {
+            return Ok();
         }
     }
 }

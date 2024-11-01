@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace hospital_api.Controllers;
 
 
+[ApiController]
 [Route("api/[controller]")]
 public class Dictionary : Controller
 {
