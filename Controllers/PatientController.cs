@@ -109,9 +109,11 @@ namespace hospital_api.Controllers
 
         [HttpGet("{id}/inspections/search")]
         [Authorize]
-        public async Task<IActionResult> SearchPatientInspection(Guid id, [FromQuery] string request)
+        public async Task<IActionResult> SearchPatientInspection(Guid id, [FromQuery] string? request)
         {
-            return Ok();
+            
+            InspectionShortModel[] inspections = await _patientService.GetInspectionWithoutChild(id, request);
+            return Ok(inspections);
         }
     }
 }

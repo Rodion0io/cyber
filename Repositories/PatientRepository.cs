@@ -1,4 +1,5 @@
 using hospital_api.Dates;
+using hospital_api.Enums;
 using hospital_api.Modules;
 using hospital_api.Repositories.repositoryInterfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -69,5 +70,40 @@ public class PatientRepository : IPatientRepository
     {
         await _context.Consultations.AddAsync(model);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<Inspection[]> GetInspetionWithoutChild(Guid patientId)
+    {
+        Inspection[] result = await _context.Inspections.Where(i => i.patient == patientId).ToArrayAsync();
+
+        return result;
+    }
+
+    public async Task<List<DiagnosisModel>> GetDiagnosisInspectionWithUotChild(Guid inspectionId, string? name)
+    {
+        
+        List<DiagnosisModel> listDiagnosis = await _context.Diagnosis
+            .Where(i => 
+                i.inspectionId == inspectionId && 
+                i.type == DiagnosisType.Main &&
+                (name == null || i.name.Contains(name) || i.code.Contains(name)))
+            .Select(i => new DiagnosisModel
+            {
+                id = i.id,
+                createTime = i.createTime,
+                code = i.code,
+                name = i.name,
+                description = i.description,
+                type = i.type
+            })
+            .ToListAsync();
+
+        
+        
+        // Diagnosis result = _context.Diagnosis.Where(i =>
+        //     i.inspectionId == inspectionId && i.type == DiagnosisType.Main &&
+        //     (i.name.Contains(name) || i.code.Contains(name)));
+
+        return listDiagnosis;
     }
 }

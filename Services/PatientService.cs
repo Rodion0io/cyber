@@ -225,6 +225,29 @@ public class PatientService : IPatientService
             return false;
         }
     }
-    
-    
+
+    public async Task<InspectionShortModel[]> GetInspectionWithoutChild(Guid patientId, string? partName)
+    {
+        List<InspectionShortModel> inspections = new List<InspectionShortModel>();
+        Inspection[] allInspections = await _patientRepository.GetInspetionWithoutChild(patientId);
+
+        foreach (var value in allInspections)
+        {
+            List<DiagnosisModel> diagnosis = await _patientRepository.GetDiagnosisInspectionWithUotChild(value.id, partName);
+
+            foreach (var x in diagnosis)
+            {
+                InspectionShortModel shortInspection = new InspectionShortModel
+                {
+                    id = value.id,
+                    createTime = value.createTime,
+                    date = value.date,
+                    diagnosis = x
+                };
+                inspections.Add(shortInspection);
+            }
+        }
+
+        return inspections.ToArray();
+    }
 }
