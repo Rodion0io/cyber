@@ -1,6 +1,8 @@
+using hospital_api.Modules;
+
 namespace hospital_api.Services.Interfaces;
 
-public class IConsultationService
+public interface IConsultationService
 {
-    
+    public Task<ConsultationModel> GetConcreteConsultation(Guid id);
 }

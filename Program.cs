@@ -54,6 +54,7 @@ builder.Services.AddScoped<DictionaryRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IDictionaryRepository, DictionaryRepository>();
 builder.Services.AddScoped<IInspectionRepository, InspectionRepository>();
+builder.Services.AddScoped<IConsultationRepository, ConsultationRepository>();
 
 // Регистрация сервисов
 builder.Services.AddScoped<IDoctorServic, DoctorServic>();
@@ -61,6 +62,7 @@ builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<IDictionaryServic, DictionaryServic>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IInspectionService, InspectionService>();
+builder.Services.AddScoped<IConsultationService, ConsultationService>();
 
 // Регистрация настроек
 builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("AuthSettings"));

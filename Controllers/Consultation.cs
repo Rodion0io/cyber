@@ -11,17 +11,29 @@ namespace hospital_api.Controllers;
 [Route("api/[controller]")]
 public class Consultation : Controller
 {
-    [HttpGet]
-    public async Task<IActionResult> GetListConsultation()
+    
+    private readonly IConsultationService _consultationService;
+
+    public Consultation(IConsultationService consultationService)
     {
+        _consultationService = consultationService;
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetListConsultation([FromQuery] bool? grouped, [FromQuery] int? page,
+        [FromQuery] int? pageNumber)
+    {
+        
         return Ok();
     }
     
     
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetConsultation()
+    public async Task<IActionResult> GetConsultation([FromQuery] string id)
     {
-        return Ok();
+
+        var result = await _consultationService.GetConcreteConsultation(Guid.Parse(id));
+        return Ok(result);
     }
     
 }
