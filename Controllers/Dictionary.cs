@@ -22,7 +22,7 @@ public class Dictionary : Controller
     [HttpGet("speciality")]
     public async Task<IActionResult> GetSpeciality([FromQuery(Name = "name")] string? name = null,
         [FromQuery(Name = "pageNuber")] int pageNumber = 1,
-        [FromQuery(Name = "pageSize")] int pageSize = 1)
+        [FromQuery(Name = "pageSize")] int pageSize = 5)
     {
         
         //вот так нельзя вызывать. движок метода GetFullSpeciaityTable

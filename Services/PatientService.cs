@@ -265,73 +265,88 @@ public class PatientService : IPatientService
 
 
     public async Task<List<PatientModel>> GetFilteringPatient(string? name, List<Conclusion> conclusions,
-        SortPatient? sorting,
-        bool? scheduledVisits, bool? onlyMine, Guid doctorId)
+    SortPatient? sorting,
+    bool? scheduledVisits, bool? onlyMine, Guid doctorId)
     {
-        var copyTable = await _context.Inspections.ToListAsync();
-        List<PatientModel> patientList = new List<PatientModel>();
+        var сopy = _context.Inspections.ToList();
 
         if (name != null)
         {
-            var ListPatinets = await _patientRepository.GetPatientName(name);
-            List<Inspection> filtInspectionByNamePatient = new List<Inspection>();
-
-            foreach (var value in ListPatinets)
-            {
-                //Не понял почему, но именно AddRange здесь нужен, а не Range
-                filtInspectionByNamePatient.AddRange(copyTable.Where(i => i.patient == value));
-            }
-
-            copyTable = filtInspectionByNamePatient;
-        }
-
-        if (conclusions.Count != 0)
-        {
-            List<Inspection> filtInspectionByConclusion = new List<Inspection>();
-
-            foreach (var value in conclusions)
-            {
-                filtInspectionByConclusion.AddRange(copyTable.Where(i => i.conclusion == value));
-            }
-            
-            copyTable = filtInspectionByConclusion;
-        }
-
-        if (scheduledVisits != null && scheduledVisits != false)
-        {
-            copyTable = copyTable.Where(i => i.nextVisitDate != null).ToList();
-        }
-
-        if (onlyMine != null && onlyMine != false)
-        {
-            copyTable = copyTable.Where(i => i.doctor == doctorId).ToList();
-        }
-
-        switch (sorting)
-        {
-            // case SortPatient.NameAsc:
-            //     copyTable.OrderBy(i => (await _patientRepository.FindPatient((i.patient).ToString())).name);
-            //     break;
-            // case SortPatient.NameDesc
-            case SortPatient.CreateAsc:
-                copyTable.OrderBy(i => i.createTime);
-                break;
-            case SortPatient.CreateDesc:
-                copyTable.OrderByDescending(i => i.createTime);
-                break;
-            case SortPatient.InspectionAsc:
-                copyTable.OrderBy(i => i.date);
-                break;
-            case SortPatient.InspectionDesc:
-                copyTable.OrderByDescending(i => i.date);
-                break;
-        }
-
-        foreach (var value in copyTable)
-        {
-            patientList.Add(await _patientRepository.FindPatient((value.patient).ToString()));
+            var patientIds = await _patientRepository.GetPatientName(name);
+            сopy = сopy.Where(i => patientIds.Contains(i.patient)).ToList();
         }
         
-        return patientList;
+        if (onlyMine != null && onlyMine != false)
+        {
+            сopy = сopy.Where(i => i.doctor == doctorId).ToList();
+        }
+        
+        if (conclusions.Count != 0)
+        {
+            сopy = сopy.Where(i => conclusions.Contains(i.conclusion)).ToList();
+        }
+        
+        if (scheduledVisits != null && scheduledVisits != false)
+        {
+            var maxDates = сopy
+                .GroupBy(i => i.patient)
+                //Эту строчку выдал чат
+                .Select(g => new { Patient = g.Key, MaxDate = g.Max(i => i.date) })
+                .ToList();
+            сopy = сopy.Where(i => i.nextVisitDate != null &&
+                                   maxDates.Any(md => md.Patient == i.patient && i.nextVisitDate > md.MaxDate)).ToList();
+        }
+
+        var patientsWithNames = new List<(Inspection Inspection, string PatientName)>();
+        
+        switch (sorting)
+        {
+            case SortPatient.NameAsc:
+                foreach (var inspection in сopy)
+                {
+                    var patient = await _patientRepository.FindPatient(inspection.patient.ToString());
+                    patientsWithNames.Add((inspection, patient.name));
+                }
+
+                сopy = sorting == SortPatient.NameAsc
+                    ? patientsWithNames.OrderBy(x => x.PatientName).Select(x => x.Inspection).ToList()
+                    : patientsWithNames.OrderBy(x => x.PatientName).Select(x => x.Inspection).ToList();
+                break;
+            case SortPatient.NameDesc:
+                
+                foreach (var inspection in сopy)
+                {
+                    var patient = await _patientRepository.FindPatient(inspection.patient.ToString());
+                    patientsWithNames.Add((inspection, patient.name));
+                }
+
+                сopy = sorting == SortPatient.NameAsc
+                    ? patientsWithNames.OrderBy(x => x.PatientName).Select(x => x.Inspection).ToList()
+                    : patientsWithNames.OrderByDescending(x => x.PatientName).Select(x => x.Inspection).ToList();
+                break;
+            case SortPatient.CreateAsc:
+                сopy = сopy.OrderBy(i => i.createTime).ToList();
+                break;
+            case SortPatient.CreateDesc:
+                сopy = сopy.OrderByDescending(i => i.createTime).ToList();
+                break;
+            case SortPatient.InspectionAsc:
+                сopy = сopy.OrderBy(i => i.date).ToList();
+                break;
+            case SortPatient.InspectionDesc:
+                сopy = сopy.OrderByDescending(i => i.date).ToList();
+                break;
+        }
+
+        var patientList = new List<PatientModel>();
+        foreach (var inspection in сopy)
+        {
+            patientList.Add(await _patientRepository.FindPatient(inspection.patient.ToString()));
+        }
+
+        var result = patientList.GroupBy(x => x)
+            .Select(y => y.First()).ToList();
+
+        return result;
     }
 }

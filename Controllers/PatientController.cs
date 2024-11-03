@@ -65,8 +65,25 @@ namespace hospital_api.Controllers
             string token = authHeader.ToString().Split(" ")[1];
             Guid Id = Guid.Parse(_jwtService.DecodeToken((token).ToString()).Claims.ToArray()[2].Value);
             
+            var listSortedPatients = (await _patientService.GetFilteringPatient(name, conclusions, sorting, scheduledVisits, onlyMine, Id)).ToArray();
             
-            var result = await _patientService.GetFilteringPatient(name, conclusions, sorting, scheduledVisits, onlyMine, Id);
+            int totalPages = (int)Math.Ceiling(18 / (double)size);
+            var items = listSortedPatients.Skip((page - 1) * size).Take(size).ToList();
+
+            PageInfoModel pagination = new PageInfoModel
+            {
+                size = page,
+                current = size,
+                count = totalPages
+            };
+            
+            PatientPagedListModel result = new PatientPagedListModel
+            {
+                patients = items.ToArray(),
+                pagination = pagination
+            };
+            
+            
             return Ok(result);
         }
         
