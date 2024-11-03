@@ -106,4 +106,14 @@ public class PatientRepository : IPatientRepository
 
         return listDiagnosis;
     }
+
+    public async Task<List<Guid>> GetPatientName(string partName)
+    {
+        List<Guid> patients = new List<Guid>();
+
+        patients = await _context.Patients.Where(i => i.name.Contains(partName))
+            .Select(i => i.id).ToListAsync();
+
+        return patients;
+    }
 }

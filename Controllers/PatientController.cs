@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using hospital_api.Modules;
@@ -6,6 +7,7 @@ using hospital_api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
+using hospital_api.Enums;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -51,6 +53,21 @@ namespace hospital_api.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred: " + ex.Message);
             }
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetPatientList([FromQuery] string? name, [FromQuery] List<Conclusion> conclusions,
+            [FromQuery] SortPatient? sorting, [FromQuery] bool? scheduledVisits, [FromQuery] bool? onlyMine,
+            [FromQuery, DefaultValue(1)] int page, [FromQuery, DefaultValue(5)] int size)
+        {
+            var authHeader = HttpContext.Request.Headers["Authorization"];
+            string token = authHeader.ToString().Split(" ")[1];
+            Guid Id = Guid.Parse(_jwtService.DecodeToken((token).ToString()).Claims.ToArray()[2].Value);
+            
+            
+            var result = await _patientService.GetFilteringPatient(name, conclusions, sorting, scheduledVisits, onlyMine, Id);
+            return Ok(result);
         }
         
         [HttpPost("{id}/inspections")]

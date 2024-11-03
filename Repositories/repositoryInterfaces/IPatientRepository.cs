@@ -14,4 +14,5 @@ public interface IPatientRepository
     public Task AddConsultation(Consultation model);
     public Task<Inspection[]> GetInspetionWithoutChild(Guid patientId);
     public Task<List<DiagnosisModel>> GetDiagnosisInspectionWithUotChild(Guid patientId, string? name);
+    public Task<List<Guid>> GetPatientName(string partName);
 }

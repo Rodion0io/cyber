@@ -17,7 +17,12 @@ namespace hospital_api.Dates
         public DbSet<Diagnosis> Diagnosis { get; set; }
         public DbSet<Consultation> Consultations { get; set; }
         public DbSet<Comment> Comments { get; set; }
-        
+
+
+        // protected override void OnModelCreating(ModelBuilder modelBuilder)
+        // {
+        //     modelBuilder.Entity<>()
+        // }
         public AccountsContext(DbContextOptions<AccountsContext> options) : base(options)
         {
             // Database.EnsureCreated();

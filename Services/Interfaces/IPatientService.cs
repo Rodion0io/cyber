@@ -1,3 +1,4 @@
+using hospital_api.Enums;
 using hospital_api.Modules;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,4 +16,6 @@ public interface IPatientService
     public Task<bool> CheckDethPatient(InspectionCreateModel model);
     public Task<string> AddInpection(InspectionCreateModel model, Guid patintId, Guid doctorId, string doctorName);
     public Task<InspectionShortModel[]> GetInspectionWithoutChild(Guid patientId, string? partName);
+    public Task<List<PatientModel>> GetFilteringPatient(string? name, List<Conclusion> conclusions, SortPatient? sorting,
+        bool? scheduledVisits, bool? onlyMine, Guid doctorId);
 }

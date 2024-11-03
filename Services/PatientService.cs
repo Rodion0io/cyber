@@ -1,20 +1,25 @@
+using hospital_api.Dates;
 using hospital_api.Enums;
 using hospital_api.Modules;
 using hospital_api.Repositories.repositoryInterfaces;
 using hospital_api.Services.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Services;
 
 public class PatientService : IPatientService
 {
+    //Надо будет вынести
+    private readonly AccountsContext _context;
     private readonly IPatientRepository _patientRepository;
     private readonly IDictionaryRepository _dictionaryRepository;
 
-    public PatientService(IPatientRepository patientRepository,
+    public PatientService(AccountsContext context, IPatientRepository patientRepository,
         IDictionaryRepository dictionaryRepository)
     {
+        _context = context;
         _patientRepository = patientRepository;
         _dictionaryRepository = dictionaryRepository;
     }
@@ -231,23 +236,102 @@ public class PatientService : IPatientService
         List<InspectionShortModel> inspections = new List<InspectionShortModel>();
         Inspection[] allInspections = await _patientRepository.GetInspetionWithoutChild(patientId);
 
-        foreach (var value in allInspections)
+        if (allInspections.Length == 0)
         {
-            List<DiagnosisModel> diagnosis = await _patientRepository.GetDiagnosisInspectionWithUotChild(value.id, partName);
-
-            foreach (var x in diagnosis)
+            throw new Exception("Нет осмотров или нет такого пациента!");
+        }
+        else
+        {
+            foreach (var value in allInspections)
             {
-                InspectionShortModel shortInspection = new InspectionShortModel
+                List<DiagnosisModel> diagnosis = await _patientRepository.GetDiagnosisInspectionWithUotChild(value.id, partName);
+
+                foreach (var x in diagnosis)
                 {
-                    id = value.id,
-                    createTime = value.createTime,
-                    date = value.date,
-                    diagnosis = x
-                };
-                inspections.Add(shortInspection);
+                    InspectionShortModel shortInspection = new InspectionShortModel
+                    {
+                        id = value.id,
+                        createTime = value.createTime,
+                        date = value.date,
+                        diagnosis = x
+                    };
+                    inspections.Add(shortInspection);
+                }
             }
         }
-
+        
         return inspections.ToArray();
+    }
+
+
+    public async Task<List<PatientModel>> GetFilteringPatient(string? name, List<Conclusion> conclusions,
+        SortPatient? sorting,
+        bool? scheduledVisits, bool? onlyMine, Guid doctorId)
+    {
+        var copyTable = await _context.Inspections.ToListAsync();
+        List<PatientModel> patientList = new List<PatientModel>();
+
+        if (name != null)
+        {
+            var ListPatinets = await _patientRepository.GetPatientName(name);
+            List<Inspection> filtInspectionByNamePatient = new List<Inspection>();
+
+            foreach (var value in ListPatinets)
+            {
+                //Не понял почему, но именно AddRange здесь нужен, а не Range
+                filtInspectionByNamePatient.AddRange(copyTable.Where(i => i.patient == value));
+            }
+
+            copyTable = filtInspectionByNamePatient;
+        }
+
+        if (conclusions.Count != 0)
+        {
+            List<Inspection> filtInspectionByConclusion = new List<Inspection>();
+
+            foreach (var value in conclusions)
+            {
+                filtInspectionByConclusion.AddRange(copyTable.Where(i => i.conclusion == value));
+            }
+            
+            copyTable = filtInspectionByConclusion;
+        }
+
+        if (scheduledVisits != null && scheduledVisits != false)
+        {
+            copyTable = copyTable.Where(i => i.nextVisitDate != null).ToList();
+        }
+
+        if (onlyMine != null && onlyMine != false)
+        {
+            copyTable = copyTable.Where(i => i.doctor == doctorId).ToList();
+        }
+
+        switch (sorting)
+        {
+            // case SortPatient.NameAsc:
+            //     copyTable.OrderBy(i => (await _patientRepository.FindPatient((i.patient).ToString())).name);
+            //     break;
+            // case SortPatient.NameDesc
+            case SortPatient.CreateAsc:
+                copyTable.OrderBy(i => i.createTime);
+                break;
+            case SortPatient.CreateDesc:
+                copyTable.OrderByDescending(i => i.createTime);
+                break;
+            case SortPatient.InspectionAsc:
+                copyTable.OrderBy(i => i.date);
+                break;
+            case SortPatient.InspectionDesc:
+                copyTable.OrderByDescending(i => i.date);
+                break;
+        }
+
+        foreach (var value in copyTable)
+        {
+            patientList.Add(await _patientRepository.FindPatient((value.patient).ToString()));
+        }
+        
+        return patientList;
     }
 }
