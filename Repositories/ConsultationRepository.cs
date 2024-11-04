@@ -34,4 +34,24 @@ public class ConsultationRepository : IConsultationRepository
 
         return consultation;
     }
+
+    public async Task<bool> CheckConsultation(Guid consultationId)
+    {
+        bool result = await _context.Consultations.AnyAsync(i => i.id == consultationId);
+        
+        return result;
+    }
+
+    public async Task<bool> CheckComment(Guid commentId)
+    {
+        bool result = await _context.Comments.AnyAsync(i => i.id == commentId);
+
+        return result;
+    }
+
+    public async Task AddNewComment(Comment newComment)
+    {
+        await _context.Comments.AddAsync(newComment);
+        await _context.SaveChangesAsync();
+    }
 }

@@ -19,35 +19,63 @@ public class ConsultationService : IConsultationService
     
     public async Task<ConsultationModel> GetConcreteConsultation(Guid id)
     {
-        Consultation model = await _consultationRepository.GetConsultations(id);
-        SpecialityModel speciality = await _consultationRepository.GetSpeciality(model.specialityId);
-        List<Comment> comments = await _consultationRepository.GetComment(model.id);
-        List<CommentModel> newCommentsList = new List<CommentModel>();
+        var model = await _consultationRepository.GetConsultations(id);
 
-        foreach (var value in comments)
+        if (model == null)
         {
-            CommentModel commentModel = new CommentModel
-            {
-                id = value.id,
-                createTime = value.createTime,
-                modifiedDate = value.modifiedDate,
-                content = value.content,
-                authorId = value.authorId,
-                author = value.author,
-                parentId = value.parentId
-            };
-            newCommentsList.Add(commentModel);
+            throw new Exception("Такой консультации нет!");
         }
-
-        ConsultationModel result = new ConsultationModel
+        else
         {
-            id = model.id,
-            createTime = model.createTime,
-            inspectionId = model.inspectionId,
-            speciality = speciality,
-            comments = newCommentsList.ToArray()
-        };
+            SpecialityModel speciality = await _consultationRepository.GetSpeciality(model.specialityId);
+            List<Comment> comments = await _consultationRepository.GetComment(model.id);
+            List<CommentModel> newCommentsList = new List<CommentModel>();
 
-        return result;
+            foreach (var value in comments)
+            {
+                CommentModel commentModel = new CommentModel
+                {
+                    id = value.id,
+                    createTime = value.createTime,
+                    modifiedDate = value.modifiedDate,
+                    content = value.content,
+                    authorId = value.authorId,
+                    author = value.author,
+                    parentId = value.parentId
+                };
+                newCommentsList.Add(commentModel);
+            }
+
+            ConsultationModel result = new ConsultationModel
+            {
+                id = model.id,
+                createTime = model.createTime,
+                inspectionId = model.inspectionId,
+                speciality = speciality,
+                comments = newCommentsList.ToArray()
+            };
+            return result;
+        }
+    }
+
+    public async Task AddCommentConsultation(CommentCreateModel model, Guid consultationId,
+        Guid docotrId, string doctorName)
+    {
+        if (await _consultationRepository.CheckConsultation(consultationId))
+        {
+            Comment newComment = new Comment
+            {
+                content = model.content,
+                authorId = docotrId,
+                author = doctorName,
+                parentId = (await _consultationRepository.CheckComment(model.parentId) != false ? model.parentId : null),
+                consultationId = consultationId
+            };
+            await _consultationRepository.AddNewComment(newComment);
+        }
+        else
+        {
+            throw new Exception("Консультации такой нет!");
+        }
     }
 }

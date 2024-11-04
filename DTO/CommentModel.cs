@@ -17,5 +17,5 @@ public class CommentModel
     [Required]
     [MinLength(1)]
     public string author { get; set; }
-    public Guid parentId { get; set; }
+    public Guid? parentId { get; set; }
 }
