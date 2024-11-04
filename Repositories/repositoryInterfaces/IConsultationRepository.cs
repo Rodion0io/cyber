@@ -10,4 +10,6 @@ public interface IConsultationRepository
     public Task<bool> CheckConsultation(Guid consultationId);
     public Task<bool> CheckComment(Guid commentId);
     public Task AddNewComment(Comment newComment);
+    public Task<Comment> GetCommentModel(Guid commentId);
+    public Task UpdateContent(string newText, Comment model);
 }

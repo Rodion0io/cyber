@@ -78,4 +78,32 @@ public class ConsultationService : IConsultationService
             throw new Exception("Консультации такой нет!");
         }
     }
+
+    public async Task UpdateComment(InspectionCommentCreateModel model, Guid commentId, Guid doctorId)
+    {
+        if (await _consultationRepository.CheckComment(commentId) != false)
+        {
+            var x = await _consultationRepository.GetCommentModel(commentId);
+
+            if (x != null)
+            {
+                if (x.authorId == doctorId)
+                {
+                    await _consultationRepository.UpdateContent(model.content, x);
+                }
+                else
+                {
+                    throw new Exception("Вы не можете изменить данный комментарий!");
+                }
+            }
+            else
+            {
+                throw new Exception("Ошибка");
+            }
+        }
+        else
+        {
+            throw new Exception("Комментария с таким Id нет!");
+        }
+    }
 }

@@ -43,19 +43,30 @@ public class Consultation : Controller
 
     [HttpPost("{id}/comment")]
     [Authorize]
-    public async Task<IActionResult> AddCommentToConcreneteConsultation([FromQuery] Guid consultationId,
+    public async Task<IActionResult> AddCommentToConcreneteConsultation(Guid consultationId,
         [FromBody] CommentCreateModel model)
     {
         
         var authHeader = HttpContext.Request.Headers["Authorization"];
-        // Console.WriteLine(authHeader);
         string token = authHeader.ToString().Split(" ")[1];
-        // Console.WriteLine(token);
         Guid Id = Guid.Parse(_jwtService.DecodeToken(token).Claims.ToArray()[2].Value);
         string name = _jwtService.DecodeToken(token).Claims.ToArray()[0].Value;
         
         await _consultationService.AddCommentConsultation(model, consultationId, Id, name);
         return Ok();
     }
-    
+
+    [HttpPut("/comment/{id}")]
+    [Authorize]
+    public async Task<IActionResult> RedactComment(Guid id, [FromBody] InspectionCommentCreateModel model)
+    {
+
+        
+        var authHeader = HttpContext.Request.Headers["Authorization"];
+        string token = authHeader.ToString().Split(" ")[1];
+        Guid Id = Guid.Parse(_jwtService.DecodeToken(token).Claims.ToArray()[2].Value);
+        
+        await _consultationService.UpdateComment(model, id, Id);
+        return Ok();
+    }
 }

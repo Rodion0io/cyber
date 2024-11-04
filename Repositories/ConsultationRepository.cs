@@ -54,4 +54,25 @@ public class ConsultationRepository : IConsultationRepository
         await _context.Comments.AddAsync(newComment);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<Comment> GetCommentModel(Guid commentId)
+    {
+        var comm = await _context.Comments.FirstOrDefaultAsync(i => i.id == commentId);
+
+        if (comm != null)
+        {
+            return comm;
+        }
+        else
+        {
+            throw new Exception("Такого комментария нет!");
+        }
+    }
+
+    public async Task UpdateContent(string newText, Comment model)
+    {
+        model.content = newText;
+        model.modifiedDate = DateTime.Now.ToUniversalTime();
+        await _context.SaveChangesAsync();
+    }
 }
