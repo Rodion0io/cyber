@@ -131,7 +131,17 @@ namespace hospital_api.Controllers
                 await _patientService.AddInpection(model, id, Id, name);
             }
             return Ok();
-        } 
+        }
+
+        [HttpGet("{id}/inspections")]
+        [Authorize]
+        public async Task<IActionResult> GetListPatientInspections([FromQuery] Guid id, [FromQuery] bool grouped,
+            [FromQuery] List<Guid> icdRoots, [FromQuery(Name = "page")] int pageNumber = 1,
+            [FromQuery(Name = "pageSize")] int pageSize = 5)
+        {
+            
+            return Ok();
+        }
         
         [HttpGet("{id}")]
         [Authorize]

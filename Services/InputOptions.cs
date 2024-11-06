@@ -23,7 +23,7 @@ public class InputOptions : IInputOptions
         }
         else
         {
-            return inspections.Where(i => i.previousId != null).ToList();
+            return inspections;
         }
     }
 

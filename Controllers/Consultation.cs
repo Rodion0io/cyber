@@ -27,7 +27,7 @@ public class Consultation : Controller
     
     [HttpGet]
     [Authorize]
-    public async Task<IActionResult> GetListConsultation([FromQuery] bool grouped, [FromQuery] List<Guid> list, [FromQuery(Name = "pageNuber")] int pageNumber = 1,
+    public async Task<IActionResult> GetListConsultation([FromQuery] bool grouped, [FromQuery] List<Guid> icdRoots, [FromQuery(Name = "pageNuber")] int pageNumber = 1,
         [FromQuery(Name = "pageSize")] int pageSize = 5)
     {
      
