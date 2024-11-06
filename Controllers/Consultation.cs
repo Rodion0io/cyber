@@ -15,24 +15,32 @@ public class Consultation : Controller
     
     private readonly IConsultationService _consultationService;
     private readonly IJWTService _jwtService;
+    private readonly IInputOptions _inputOpstions;
 
-    public Consultation(IConsultationService consultationService, IJWTService jwtService)
+    public Consultation(IConsultationService consultationService, IJWTService jwtService,
+        IInputOptions inputOptions)
     {
         _consultationService = consultationService;
         _jwtService = jwtService;
+        _inputOpstions = inputOptions;
     }
     
     [HttpGet]
     [Authorize]
-    public async Task<IActionResult> GetListConsultation([FromQuery] bool? grouped, [FromQuery(Name = "pageNuber")] int pageNumber = 1,
+    public async Task<IActionResult> GetListConsultation([FromQuery] bool grouped, [FromQuery] List<Guid> list, [FromQuery(Name = "pageNuber")] int pageNumber = 1,
         [FromQuery(Name = "pageSize")] int pageSize = 5)
     {
      
         var authHeader = HttpContext.Request.Headers["Authorization"];
         string token = authHeader.ToString().Split(" ")[1];
         Guid Id = Guid.Parse(_jwtService.DecodeToken(token).Claims.ToArray()[2].Value);
-
+        
         var result = await _consultationService.GetListInspectionForConsultation(Id);
+
+        if (grouped != null)
+        {
+            result = _inputOpstions.GetFilteringGroupInspection(result, grouped);
+        }
         
         int totalPages = (int)Math.Ceiling(result.Count / (double)pageSize);
         
