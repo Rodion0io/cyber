@@ -349,4 +349,38 @@ public class PatientService : IPatientService
 
         return result;
     }
+
+    public async Task<List<InspectionPreviewModel>> GetListPatientInspection(Guid patientId)
+    {
+        List<InspectionPreviewModel> result = new List<InspectionPreviewModel>();
+
+        result = await _context.Inspections.Where(i => i.patient == patientId)
+            .Select(i => new InspectionPreviewModel
+            {
+                id = i.id,
+                createTime = i.createTime,
+                previousId = i.previousInspectionId,
+                date = i.date,
+                conclusion = i.conclusion,
+                doctorId = i.doctor,
+                doctor = _context.Doctors.Where(x => x.id == i.doctor)
+                    .Select(x => x.name).FirstOrDefault(),
+                patientId = i.patient,
+                patient = _context.Patients.Where(x => x.id == i.patient)
+                    .Select(x => x.name).FirstOrDefault(),
+                diagnosis = _context.Diagnosis.Where(x => x.inspectionId == i.id)
+                    .Select(x => new DiagnosisModel
+                    {
+                        id = x.id,
+                        createTime = x.createTime,
+                        code = x.code,
+                        name = x.name,
+                        description = x.description,
+                        type = x.type
+                    }).FirstOrDefault(),
+                hasChain = false,
+                hasNested = false
+            }).ToListAsync();
+        return result;
+    }
 }

@@ -18,4 +18,6 @@ public interface IPatientService
     public Task<InspectionShortModel[]> GetInspectionWithoutChild(Guid patientId, string? partName);
     public Task<List<PatientModel>> GetFilteringPatient(string? name, List<Conclusion> conclusions, SortPatient? sorting,
         bool? scheduledVisits, bool? onlyMine, Guid doctorId);
+
+    public Task<List<InspectionPreviewModel>> GetListPatientInspection(Guid patientId);
 }

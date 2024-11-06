@@ -20,11 +20,14 @@ namespace hospital_api.Controllers
         
         private readonly IPatientService _patientService;
         private readonly IJWTService _jwtService;
+        private readonly IInputOptions _inputOptions;
 
-        public PatientController(IPatientService patientService, IJWTService jwtService)
+        public PatientController(IPatientService patientService, IJWTService jwtService,
+            IInputOptions inputOptions)
         {
             _patientService = patientService;
             _jwtService = jwtService;
+            _inputOptions = inputOptions;
         }
         
         [HttpPost]
@@ -67,7 +70,7 @@ namespace hospital_api.Controllers
             
             var listSortedPatients = (await _patientService.GetFilteringPatient(name, conclusions, sorting, scheduledVisits, onlyMine, Id)).ToArray();
             
-            int totalPages = (int)Math.Ceiling(18 / (double)size);
+            int totalPages = (int)Math.Ceiling(listSortedPatients.Length / (double)size);
             var items = listSortedPatients.Skip((page - 1) * size).Take(size).ToList();
 
             PageInfoModel pagination = new PageInfoModel
@@ -139,8 +142,31 @@ namespace hospital_api.Controllers
             [FromQuery] List<Guid> icdRoots, [FromQuery(Name = "page")] int pageNumber = 1,
             [FromQuery(Name = "pageSize")] int pageSize = 5)
         {
+
+            var listInspections = await _patientService.GetListPatientInspection(id);
             
-            return Ok();
+            if (grouped != null)
+            {
+                listInspections = _inputOptions.GetFilteringGroupInspection(listInspections, grouped);
+            }
+            
+            int totalPages = (int)Math.Ceiling(listInspections.Count / (double)pageSize);
+            var items = listInspections.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+            PageInfoModel pagination = new PageInfoModel
+            {
+                size = pageNumber,
+                current = pageSize,
+                count = totalPages
+            };
+            
+            InspectionPagedListModel res = new InspectionPagedListModel
+            {
+                inspections = items.ToArray(),
+                pagination = pagination
+            };
+            
+            return Ok(res);
         }
         
         [HttpGet("{id}")]
