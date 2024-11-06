@@ -52,7 +52,7 @@ public class InspectionService : IInspectionService
                 baseInspectionId = model.baseInspectionId,
                 previousInspectionId = model.previousInspectionId,
                 patient = await _patientRepository.FindPatient((model.patient).ToString()),
-                doctor = _doctorServic.GetDoctorInfa(doctorId.ToString()),
+                doctor = await _doctorServic.GetDoctorInfa(doctorId.ToString()),
                 diagnoses = listDiagnosis,
                 consultations = listConsultations
             };

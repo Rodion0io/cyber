@@ -9,4 +9,5 @@ public interface IConsultationService
         Guid docotrId, string doctorName);
 
     public Task UpdateComment(InspectionCommentCreateModel model, Guid commentId, Guid doctorId);
+    public Task<List<InspectionPreviewModel>> GetListInspectionForConsultation(Guid doctorId);
 }

@@ -18,7 +18,7 @@ public interface IAccountRepository
     
     public Task<bool> FindTokenInBlackList(string token);
     
-    public Doctor FindDoctorById(string id);
+    public Task<Doctor> FindDoctorById(string id);
     
     public Task UpdateDate(string id, DoctorEditModel newData);
 }

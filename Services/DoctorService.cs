@@ -103,12 +103,12 @@ public class DoctorServic : IDoctorServic
         return await _accountRepository.FindTokenInBlackList(token);
     }
     
-    public DoctorModel GetDoctorInfa(string id)
+    public async Task<DoctorModel> GetDoctorInfa(string id)
     {
         
         // var claimIdentifier = _jwtService.DecodeToken(id).Claims.ToArray()[2].Value;
     
-        Doctor doctor = _accountRepository.FindDoctorById(id);
+        Doctor doctor = await _accountRepository.FindDoctorById(id);
         
         DoctorModel result = new DoctorModel
         {

@@ -9,7 +9,7 @@ public class InspectionPreviewModel
     public Guid id { get; set; }
     [Required]
     public DateTime createTime { get; set; }
-    public Guid previousId { get; set; }
+    public Guid? previousId { get; set; }
     [Required]
     public DateTime date { get; set; }
     [Required]

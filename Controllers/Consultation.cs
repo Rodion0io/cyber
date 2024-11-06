@@ -24,11 +24,34 @@ public class Consultation : Controller
     
     [HttpGet]
     [Authorize]
-    public async Task<IActionResult> GetListConsultation([FromQuery] bool? grouped, [FromQuery] int? page,
-        [FromQuery] int? pageNumber)
+    public async Task<IActionResult> GetListConsultation([FromQuery] bool? grouped, [FromQuery(Name = "pageNuber")] int pageNumber = 1,
+        [FromQuery(Name = "pageSize")] int pageSize = 5)
     {
+     
+        var authHeader = HttpContext.Request.Headers["Authorization"];
+        string token = authHeader.ToString().Split(" ")[1];
+        Guid Id = Guid.Parse(_jwtService.DecodeToken(token).Claims.ToArray()[2].Value);
+
+        var result = await _consultationService.GetListInspectionForConsultation(Id);
         
-        return Ok();
+        int totalPages = (int)Math.Ceiling(result.Count / (double)pageSize);
+        
+        var items = result.Skip((int)((pageNumber - 1) * pageSize)).Take((int)pageSize).ToList();
+
+        PageInfoModel pagination = new PageInfoModel
+        {
+            size = pageSize,
+            current = pageNumber,
+            count = totalPages
+        };
+
+        InspectionPagedListModel res = new InspectionPagedListModel
+        {
+            inspections = items.ToArray(),
+            pagination = pagination
+        };
+        
+        return Ok(res);
     }
     
     

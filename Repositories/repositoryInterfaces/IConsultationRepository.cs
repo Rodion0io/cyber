@@ -12,4 +12,5 @@ public interface IConsultationRepository
     public Task AddNewComment(Comment newComment);
     public Task<Comment> GetCommentModel(Guid commentId);
     public Task UpdateContent(string newText, Comment model);
+    // public Task<List<Inspection>> GetAllConsulationInspectId(Guid specialityId);
 }

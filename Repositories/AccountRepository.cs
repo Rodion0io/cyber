@@ -98,9 +98,9 @@ public class AccountRepository : IAccountRepository
         }
     }
     
-    public Doctor FindDoctorById(string id)
+    public async Task<Doctor> FindDoctorById(string id)
     {
-        Doctor currentDoctor = _context.Doctors.FirstOrDefault(x => (x.id).ToString() == id);
+        Doctor currentDoctor = await _context.Doctors.FirstOrDefaultAsync(x => (x.id).ToString() == id);
 
         return currentDoctor;
     }

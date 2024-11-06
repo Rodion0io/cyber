@@ -11,6 +11,6 @@ public interface IDoctorServic
     public Task GetDataInClaim(string token);
     public Task<bool> InBlackList(string token);
     // Можно ли такого типа функцию создавать? или нужно через Task<>
-    public DoctorModel GetDoctorInfa(string id);
+    public Task<DoctorModel> GetDoctorInfa(string id);
     public Task ChangeDatas(DoctorEditModel model, string id);
 }

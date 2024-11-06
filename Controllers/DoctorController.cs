@@ -86,7 +86,7 @@ namespace hospital_api.Controllers
             string token = authHeader.ToString().Split(" ")[1];
             var claimIdentifier = _jwtService.DecodeToken(token).Claims.ToArray()[2].Value;
         
-            DoctorModel doctor = _doctorServic.GetDoctorInfa(claimIdentifier);
+            DoctorModel doctor = await _doctorServic.GetDoctorInfa(claimIdentifier);
             
             return Ok(_doctorServic.GetDoctorInfa(claimIdentifier));
         }

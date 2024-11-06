@@ -1,7 +1,9 @@
+using hospital_api.Dates;
 using hospital_api.Modules;
 using hospital_api.Repositories.repositoryInterfaces;
 using hospital_api.Services.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Services;
 
@@ -10,11 +12,16 @@ public class ConsultationService : IConsultationService
     
     private readonly IConsultationRepository _consultationRepository;
     private readonly IInspectionRepository _inspectionRepository;
+    private readonly IAccountRepository _accountRepository;
+    private readonly AccountsContext _context;
 
-    public ConsultationService(IConsultationRepository consultationRepository, IInspectionRepository inspectionRepository)
+    public ConsultationService(IConsultationRepository consultationRepository, IInspectionRepository inspectionRepository, 
+        IAccountRepository accountRepository, AccountsContext context)
     {
         _consultationRepository = consultationRepository;
         _inspectionRepository = inspectionRepository;
+        _accountRepository = accountRepository;
+        _context = context;
     }
     
     public async Task<ConsultationModel> GetConcreteConsultation(Guid id)
@@ -105,5 +112,46 @@ public class ConsultationService : IConsultationService
         {
             throw new Exception("Комментария с таким Id нет!");
         }
+    }
+
+    public async Task<List<InspectionPreviewModel>> GetListInspectionForConsultation(Guid doctorId)
+    {
+        var doctor = await _accountRepository.FindDoctorById(doctorId.ToString());
+        Guid doctorSpecialityId = doctor.speciality;
+        List<InspectionPreviewModel> result = new List<InspectionPreviewModel>();
+        List<Guid> listConsultations = await _context.Consultations.Where(i => i.specialityId == doctorSpecialityId)
+            .Select(i => i.inspectionId).ToListAsync();
+
+        result = await _context.Inspections.Where(i => listConsultations.Contains(i.id))
+            .Select(i => new InspectionPreviewModel
+            {
+                id = i.id,
+                createTime = i.createTime,
+                previousId = i.previousInspectionId,
+                date = i.date,
+                conclusion = i.conclusion,
+                doctorId = i.doctor,
+                doctor = _context.Doctors.Where(x => x.id == i.doctor)
+                    .Select(x => x.name).FirstOrDefault(),
+                patientId = i.patient,
+                patient = _context.Patients.Where(x => x.id == i.patient)
+                    .Select(x => x.name).FirstOrDefault(),
+                diagnosis = _context.Diagnosis.Where(x => x.inspectionId == i.id)
+                    .Select(x => new DiagnosisModel
+                    {
+                        id = x.id,
+                        createTime = x.createTime,
+                        code = x.code,
+                        name = x.name,
+                        description = x.description,
+                        type = x.type
+                    }).FirstOrDefault(),
+                
+                hasChain = false,
+                hasNested = false
+                
+            }).ToListAsync();
+
+        return result;
     }
 }
