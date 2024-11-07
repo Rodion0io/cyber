@@ -60,5 +60,19 @@ namespace hospital_api.Controllers
             
             return Ok();
         }
+
+        [HttpGet("{id}/chain")]
+        [Authorize]
+        public async Task<IActionResult> GetInspectionChain(Guid id)
+        {
+
+            if (await _inspectionService.CheckValidInspection(id))
+            {
+                var result = await _inspectionService.GetInspectionChain(id);
+                return Ok(result);
+            }
+            
+            return Ok();
+        }
     }
 }

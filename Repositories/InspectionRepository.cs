@@ -69,6 +69,13 @@ public class InspectionRepository : IInspectionRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<Inspection> GetInspectionByPrevId(Guid? prevId)
+    {
+        var result = await _context.Inspections.FirstOrDefaultAsync(i => i.previousInspectionId == prevId);
+
+        return result;
+    }
+
     // public async Task UpdateData(Inspection updatedModel)
     // {
     //     await _context.Inspections.

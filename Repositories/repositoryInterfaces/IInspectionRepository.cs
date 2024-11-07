@@ -9,4 +9,5 @@ public interface IInspectionRepository
     public Task<InspectionConsultationModel[]> GetInspectionConsultations(Guid inspectionId);
     public Task ClearDiagnosis(Guid inspectionId);
     public Task SaveChangesInspection(Inspection changesInspection);
+    public Task<Inspection> GetInspectionByPrevId(Guid? prevId);
 }

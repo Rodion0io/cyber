@@ -1,3 +1,4 @@
+using hospital_api.Dates;
 using hospital_api.Enums;
 using hospital_api.Modules;
 using hospital_api.Repositories;
@@ -15,14 +16,16 @@ public class InspectionService : IInspectionService
     private readonly IPatientRepository _patientRepository;
     private readonly IDoctorServic _doctorServic;
     private readonly IDictionaryRepository _dictionaryRepository;
+    private readonly AccountsContext _context;
 
     public InspectionService(IInspectionRepository inspectionRepository, IPatientRepository patientRepository,
-        IDoctorServic doctorServic, IDictionaryRepository dictionaryRepository)
+        IDoctorServic doctorServic, IDictionaryRepository dictionaryRepository, AccountsContext context)
     {
         _inspectionRepository = inspectionRepository;
         _patientRepository = patientRepository;
         _doctorServic = doctorServic;
         _dictionaryRepository = dictionaryRepository;
+        _context = context;
     }
     
     public async Task<InspectionModel> GetInspection(Guid inspectionId, Guid doctorId)
@@ -144,5 +147,86 @@ public class InspectionService : IInspectionService
             }
         }
     }
+
+    public async Task<bool> CheckValidInspection(Guid inspectionId)
+    {
+        var inspection = await _inspectionRepository.GetInspection(inspectionId);
+
+        if (inspection == null)
+        {
+            throw new Exception("Такого осомтра нет!");
+            // return false;
+        }
+        else if (inspection.previousInspectionId != null)
+        {
+            throw new Exception("Это не корневой элемент");
+            // return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public async Task<List<InspectionPreviewModel>> GetInspectionChain(Guid rootInspectionId)
+{
+    List<InspectionPreviewModel> result = new List<InspectionPreviewModel>();
+    List<Guid> processedInspectionIds = new List<Guid>(); 
+    Guid? currentInspectionId = rootInspectionId;
+
+    while (currentInspectionId != null)
+    {
+        if (processedInspectionIds.Contains((Guid)currentInspectionId))
+        {
+            break;
+        }
+
+        processedInspectionIds.Add((Guid)currentInspectionId);
+
+        var nextInspection = await _inspectionRepository.GetInspectionByPrevId(currentInspectionId);
+
+        if (nextInspection != null)
+        {
+            InspectionPreviewModel model = new InspectionPreviewModel
+            {
+                id = nextInspection.id,
+                createTime = nextInspection.createTime,
+                previousId = nextInspection.previousInspectionId,
+                date = nextInspection.date,
+                conclusion = nextInspection.conclusion,
+                doctorId = nextInspection.doctor,
+                doctor = _context.Doctors.Where(x => x.id == nextInspection.doctor)
+                    .Select(x => x.name).FirstOrDefault(),
+                patientId = nextInspection.patient,
+                patient = _context.Patients.Where(x => x.id == nextInspection.patient)
+                    .Select(x => x.name).FirstOrDefault(),
+                diagnosis = _context.Diagnosis.Where(x => x.inspectionId == nextInspection.id)
+                    .Select(x => new DiagnosisModel
+                    {
+                        id = x.id,
+                        createTime = x.createTime,
+                        code = x.code,
+                        name = x.name,
+                        description = x.description,
+                        type = x.type
+                    }).FirstOrDefault(),
+                hasChain = nextInspection.previousInspectionId != null,
+                hasNested = false
+            };
+
+            result.Add(model);
+
+            currentInspectionId = nextInspection.previousInspectionId;
+        }
+        else
+        {
+            currentInspectionId = null;
+        }
+    }
+
+    return result;
+}
+
+
     
 }
