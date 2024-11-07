@@ -149,5 +149,7 @@ public class DictionaryRepository : IDictionaryRepository
         return result.recCode.Substring(0, 2);
     }
     
+    
+    
     // Ленивая иницализация связей
 }

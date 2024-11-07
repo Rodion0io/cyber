@@ -11,10 +11,20 @@ namespace hospital_api.Controllers;
 [Route("api/[controller]")]
 public class ReportController : Controller
 {
+    
+    private readonly IReportService _reportService;
+
+    public ReportController(IReportService reportService)
+    {
+        _reportService = reportService;
+    }
+    
     [HttpGet("icdrootsreport")]
     public async Task<ActionResult<IcdRootsReportModel>> GetIcdRootsReport([FromQuery(Name = "Start")] DateTime start,
         [FromQuery(Name = "End")] DateTime end, [FromQuery] List<Guid> icdRoots)
     {
-        return Ok();
+        
+        var res = await _reportService.GetReportModel(start, end, icdRoots);
+        return Ok(res);
     }
 }
