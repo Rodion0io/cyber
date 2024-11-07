@@ -134,6 +134,20 @@ public class DictionaryRepository : IDictionaryRepository
         var result = await _context.Icd.FindAsync(id);
         return result.code;
     }
+
+    public async Task<string> getRecCodeParent(Guid id)
+    {
+        var result = await _context.Icd.FirstOrDefaultAsync(i => i.secondKey == id);
+
+        return result.recCode;
+    }
+
+    public async Task<string> getTwoSymbolsRecCode(string icdCode)
+    {
+        var result = await _context.Icd.FirstOrDefaultAsync(i => i.code == icdCode);
+
+        return result.recCode.Substring(0, 2);
+    }
     
     // Ленивая иницализация связей
 }

@@ -64,6 +64,7 @@ builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IInspectionService, InspectionService>();
 builder.Services.AddScoped<IConsultationService, ConsultationService>();
 builder.Services.AddScoped<IInputOptions, InputOptions>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 // Регистрация настроек
 builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("AuthSettings"));

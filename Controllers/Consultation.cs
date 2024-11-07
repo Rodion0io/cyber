@@ -4,6 +4,7 @@ using hospital_api.Services;
 using Microsoft.AspNetCore.Mvc;
 using hospital_api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace hospital_api.Controllers;
 
@@ -27,7 +28,7 @@ public class Consultation : Controller
     
     [HttpGet]
     [Authorize]
-    public async Task<IActionResult> GetListConsultation([FromQuery] bool grouped, [FromQuery] List<Guid> icdRoots, [FromQuery(Name = "pageNuber")] int pageNumber = 1,
+    public async Task<ActionResult<InspectionPagedListModel>> GetListConsultation([FromQuery] bool grouped, [FromQuery] List<Guid> icdRoots, [FromQuery(Name = "pageNuber")] int pageNumber = 1,
         [FromQuery(Name = "pageSize")] int pageSize = 5)
     {
      
@@ -40,6 +41,11 @@ public class Consultation : Controller
         if (grouped != null)
         {
             result = _inputOpstions.GetFilteringGroupInspection(result, grouped);
+        }
+
+        if (icdRoots.Count != 0)
+        {
+            result = await _inputOpstions.GetFilteringByParentCode(result, icdRoots);
         }
         
         int totalPages = (int)Math.Ceiling(result.Count / (double)pageSize);
@@ -87,7 +93,7 @@ public class Consultation : Controller
         return Ok();
     }
 
-    [HttpPut("/comment/{id}")]
+    [HttpPut("comment/{id}")]
     [Authorize]
     public async Task<IActionResult> RedactComment(Guid id, [FromBody] InspectionCommentCreateModel model)
     {

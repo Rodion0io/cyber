@@ -13,4 +13,6 @@ public interface IDictionaryRepository
     public Task<List<Icd10RecordModel>> getFullListIcd10Roots();
     public Task<string> getIcd10Name(Guid id);
     public Task<string> getIcd10Code(Guid id);
+    public Task<string> getRecCodeParent(Guid id);
+    public Task<string> getTwoSymbolsRecCode(string icdCode);
 }

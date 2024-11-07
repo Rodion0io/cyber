@@ -1,16 +1,17 @@
 using hospital_api.Modules;
+using hospital_api.Repositories.repositoryInterfaces;
 using hospital_api.Services.Interfaces;
 
 namespace hospital_api.Services;
 
 public class InputOptions : IInputOptions
 {
-    // private readonly IInputOptions _inputOptions;
-    //
-    // public InputOptions(IInputOptions inputOptions)
-    // {
-    //     _inputOptions = inputOptions;
-    // }
+    private readonly IDictionaryRepository _dictionaryRepository;
+
+    public InputOptions(IDictionaryRepository dictionaryRepository)
+    {
+        _dictionaryRepository = dictionaryRepository;
+    }
 
     public List<InspectionPreviewModel> GetFilteringGroupInspection(List<InspectionPreviewModel> inspections, 
         bool isGrouped)
@@ -27,9 +28,23 @@ public class InputOptions : IInputOptions
         }
     }
 
-    // public List<InspectionPreviewModel> GetFilteringByParentCode(List<InspectionPreviewModel> inspections,
-    //     List<Guid> rootElementsCode)
-    // {
-    //     
-    // }
+    public async Task<List<InspectionPreviewModel>> GetFilteringByParentCode(List<InspectionPreviewModel> inspections,
+        List<Guid> rootElementsCode)
+    {
+        List<InspectionPreviewModel> result = new List<InspectionPreviewModel>();
+        List<string> recCodes = new List<string>();
+
+        foreach (var code in rootElementsCode)
+        {
+            var currentRecCode = await _dictionaryRepository.getRecCodeParent(code);
+            recCodes.Add(currentRecCode);
+        }
+
+        foreach (var value in recCodes)
+        {
+            result = inspections.Where(i => _dictionaryRepository.getTwoSymbolsRecCode(i.diagnosis.code).Result == value).ToList();
+        }
+        
+        return result;
+    }
 }
