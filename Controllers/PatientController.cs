@@ -150,6 +150,11 @@ namespace hospital_api.Controllers
                 listInspections = _inputOptions.GetFilteringGroupInspection(listInspections, grouped);
             }
             
+            if (icdRoots.Count != 0)
+            {
+                listInspections = await _inputOptions.GetFilteringByParentCode(listInspections, icdRoots);
+            }
+            
             int totalPages = (int)Math.Ceiling(listInspections.Count / (double)pageSize);
             var items = listInspections.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 

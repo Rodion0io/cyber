@@ -40,9 +40,13 @@ public class InputOptions : IInputOptions
             recCodes.Add(currentRecCode);
         }
 
-        foreach (var value in recCodes)
+        foreach (var value in inspections)
         {
-            result = inspections.Where(i => _dictionaryRepository.getTwoSymbolsRecCode(i.diagnosis.code).Result == value).ToList();
+            var inspectionCode = await _dictionaryRepository.getTwoSymbolsRecCode(value.diagnosis.code);
+            if (recCodes.Contains(inspectionCode))
+            {
+                result.Add(value);
+            }
         }
         
         return result;
