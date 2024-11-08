@@ -43,6 +43,9 @@ public class PatientService : IPatientService
 
     public async Task<string> AddInpection(InspectionCreateModel model, Guid patintId, Guid doctorId, string doctorName)
     {
+
+
+        
         
         Inspection newInspection = new Inspection
         {
@@ -150,18 +153,15 @@ public class PatientService : IPatientService
         if ((model.conclusion == Conclusion.Disease && model.nextVisitDate == null && model.deathDate == null) ||
             (model.conclusion == Conclusion.Disease && model.nextVisitDate == null && model.deathDate  != null))
         {
-            // return BadRequest("Если диагноз 'выздоровление', дата следующего визита и дата смерти не могут быть установлены.")
             return 1;
         }
         else if ((model.conclusion == Conclusion.Death && model.nextVisitDate != null && model.deathDate  == null) ||
                  (model.conclusion == Conclusion.Death && model.nextVisitDate != null && model.deathDate  != null))
         {
-            // return BadRequest("Если диагноз болен, то нужно назначить дату следующего визита и даты смерти быть не может");
             return 2;
         }
         else if (model.conclusion == Conclusion.Recovery && (model.nextVisitDate != null || model.deathDate != null))
         {
-            // return BadRequest("Если диагноз болен, то нужно назначить дату следующего визита и даты смерти быть не может");
             return 3;
         }
         else
@@ -290,7 +290,6 @@ public class PatientService : IPatientService
         {
             var maxDates = сopy
                 .GroupBy(i => i.patient)
-                //Эту строчку выдал чат
                 .Select(g => new { Patient = g.Key, MaxDate = g.Max(i => i.date) })
                 .ToList();
             сopy = сopy.Where(i => i.nextVisitDate != null &&
@@ -354,33 +353,45 @@ public class PatientService : IPatientService
     {
         List<InspectionPreviewModel> result = new List<InspectionPreviewModel>();
 
-        result = await _context.Inspections.Where(i => i.patient == patientId)
-            .Select(i => new InspectionPreviewModel
-            {
-                id = i.id,
-                createTime = i.createTime,
-                previousId = i.previousInspectionId,
-                date = i.date,
-                conclusion = i.conclusion,
-                doctorId = i.doctor,
-                doctor = _context.Doctors.Where(x => x.id == i.doctor)
-                    .Select(x => x.name).FirstOrDefault(),
-                patientId = i.patient,
-                patient = _context.Patients.Where(x => x.id == i.patient)
-                    .Select(x => x.name).FirstOrDefault(),
-                diagnosis = _context.Diagnosis.Where(x => x.inspectionId == i.id)
-                    .Select(x => new DiagnosisModel
-                    {
-                        id = x.id,
-                        createTime = x.createTime,
-                        code = x.code,
-                        name = x.name,
-                        description = x.description,
-                        type = x.type
-                    }).FirstOrDefault(),
-                hasChain = false,
-                hasNested = false
-            }).ToListAsync();
+
+        var checkPatient = await _patientRepository.FindPatient(patientId.ToString());
+
+        if (checkPatient == null)
+        {
+            throw new Exception($"Patient with id {patientId} not found");
+        }
+
+        else
+        {
+            result = await _context.Inspections.Where(i => i.patient == patientId)
+                .Select(i => new InspectionPreviewModel
+                {
+                    id = i.id,
+                    createTime = i.createTime,
+                    previousId = i.previousInspectionId,
+                    date = i.date,
+                    conclusion = i.conclusion,
+                    doctorId = i.doctor,
+                    doctor = _context.Doctors.Where(x => x.id == i.doctor)
+                        .Select(x => x.name).FirstOrDefault(),
+                    patientId = i.patient,
+                    patient = _context.Patients.Where(x => x.id == i.patient)
+                        .Select(x => x.name).FirstOrDefault(),
+                    diagnosis = _context.Diagnosis.Where(x => x.inspectionId == i.id)
+                        .Select(x => new DiagnosisModel
+                        {
+                            id = x.id,
+                            createTime = x.createTime,
+                            code = x.code,
+                            name = x.name,
+                            description = x.description,
+                            type = x.type
+                        }).FirstOrDefault(),
+                    hasChain = false,
+                    hasNested = false
+                }).ToListAsync();
+        }
+        
         return result;
     }
 }

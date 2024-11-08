@@ -20,7 +20,7 @@ public class Dictionary : Controller
     }
     
     [HttpGet("speciality")]
-    public async Task<IActionResult> GetSpeciality([FromQuery(Name = "name")] string? name = null,
+    public async Task<ActionResult<SpecialtiesPagedListModel>> GetSpeciality([FromQuery(Name = "name")] string? name = null,
         [FromQuery(Name = "pageNuber")] int pageNumber = 1,
         [FromQuery(Name = "pageSize")] int pageSize = 5)
     {
@@ -57,7 +57,7 @@ public class Dictionary : Controller
     }
 
     [HttpGet("icd10")]
-    public async Task<IActionResult> GetIcd10([FromQuery(Name = "name")] string? name = null,
+    public async Task<ActionResult<Icd10SearchModel>> GetIcd10([FromQuery(Name = "name")] string? name = null,
         [FromQuery(Name = "pageNuber")] int pageNumber = 1,
         [FromQuery(Name = "pageSize")] int pageSize = 1)
     {
@@ -87,7 +87,7 @@ public class Dictionary : Controller
     }
     
     [HttpGet("icd10/roots")]
-    public async Task<IActionResult> GetIcd10Roots()
+    public async Task<ActionResult<Icd10RecordModel[]>> GetIcd10Roots()
     {
         List<Icd10RecordModel> result = await _dictionaryService.FullListIcdRoots(); 
         

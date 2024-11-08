@@ -24,9 +24,17 @@ public class PatientRepository : IPatientRepository
     
     public async Task<PatientModel> FindPatient(string id)
     {
-        PatientModel result = await _context.Patients.FindAsync(Guid.Parse(id));
-    
-        return result;
+        var result = await _context.Patients.FindAsync(Guid.Parse(id));
+
+        if (result == null)
+        {
+            throw new Exception("Patient not found");
+        }
+        else
+        {
+            return result;
+        }
+        
     }
 
     public async Task<PatientModel> FindPatientByInspection(Guid id)

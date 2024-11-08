@@ -60,7 +60,7 @@ namespace hospital_api.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetPatientList([FromQuery] string? name, [FromQuery] List<Conclusion> conclusions,
+        public async Task<ActionResult<PatientPagedListModel>> GetPatientList([FromQuery] string? name, [FromQuery] List<Conclusion> conclusions,
             [FromQuery] SortPatient? sorting, [FromQuery] bool? scheduledVisits, [FromQuery] bool? onlyMine,
             [FromQuery, DefaultValue(1)] int page, [FromQuery, DefaultValue(5)] int size)
         {
@@ -93,52 +93,79 @@ namespace hospital_api.Controllers
         [HttpPost("{id}/inspections")]
         [Authorize]
         public async Task<IActionResult> PostPatientInspection(Guid id, [FromBody] InspectionCreateModel model)
+    {
+        var authHeader = HttpContext.Request.Headers["Authorization"];
+        string token = authHeader.ToString().Split(" ")[1];
+        Guid Id = Guid.Parse(_jwtService.DecodeToken((token).ToString()).Claims.ToArray()[2].Value);
+        string name = _jwtService.DecodeToken((token).ToString()).Claims.ToArray()[0].Value;
+
+        if (_patientService.checkPrevInspection(model) && !await _patientService.checkTimeNewInspection(model))
         {
-            
-            var authHeader = HttpContext.Request.Headers["Authorization"];
-            string token = authHeader.ToString().Split(" ")[1];
-            Guid Id = Guid.Parse(_jwtService.DecodeToken((token).ToString()).Claims.ToArray()[2].Value);
-            string name = _jwtService.DecodeToken((token).ToString()).Claims.ToArray()[0].Value;
-            
-            
-            if (_patientService.checkPrevInspection(model) && !await _patientService.checkTimeNewInspection(model))
+            return BadRequest(new ResponseModel
             {
-                throw new ValidationException("Если диагноз 'выздоровление', дата следующего визита и дата смерти не могут быть установлены.");
-            }
-            else if (_patientService.CheckConclusion(model) == 1)
+                status = "error",
+                message = "Если диагноз 'выздоровление', дата следующего визита и дата смерти не могут быть установлены."
+            });
+        }
+        else if (_patientService.CheckConclusion(model) == 1)
+        {
+            return BadRequest(new ResponseModel
             {
-                throw new ValidationException("Если диагноз 'выздоровление', дата следующего визита и дата смерти не могут быть установлены.");
-            }
-            else if (_patientService.CheckConclusion(model) == 2)
+                status = "error",
+                message = "Если диагноз 'болен', нужно назначить дату визита и дату смерти вводить не надо"
+            });
+        }
+        else if (_patientService.CheckConclusion(model) == 2)
+        {
+            return BadRequest(new ResponseModel
             {
-                throw new ValidationException("Если диагноз болен, то нужно назначить дату следующего визита и даты смерти быть не может");
-            }
-            else if (_patientService.CheckConclusion(model) == 3)
+                status = "error",
+                message = "он мертв, ничего не назначай!"
+            });
+        }
+        else if (_patientService.CheckConclusion(model) == 3)
+        {
+            return BadRequest(new ResponseModel
             {
-                throw new ValidationException("Если диагноз болен, то нужно назначить дату следующего визита и даты смерти быть не может"); 
-            }
-            else if (!_patientService.CheckTypeDiagnosis(model))
+                status = "error",
+                message = "здоров, ничего назначать не надо"
+            });
+        }
+        else if (!_patientService.CheckTypeDiagnosis(model))
+        {
+            return BadRequest(new ResponseModel
             {
-                throw new ValidationException("Должен быть ровно один диагноз типа Main");
-            }
-            else if (!_patientService.CheckAllSpecialities(model))
+                status = "error",
+                message = "Должен быть ровно один диагноз типа Main"
+            });
+        }
+        else if (!_patientService.CheckAllSpecialities(model))
+        {
+            return BadRequest(new ResponseModel
             {
-                throw new ValidationException("осмотр не может иметь несколько консультаций с одинаковой специальностью врача");
-            }
-            else if (await _patientService.CheckDethPatient(model))
+                status = "error",
+                message = "осмотр не может иметь несколько консультаций с одинаковой специальностью врача"
+            });
+        }
+        else if (await _patientService.CheckDethPatient(model))
+        {
+            return BadRequest(new ResponseModel
             {
-                throw new ValidationException("пациент уже умер");
-            }
-            else
-            {
-                await _patientService.AddInpection(model, id, Id, name);
-            }
+                status = "error",
+                message = "пациент уже умер"
+            });
+        }
+        else
+        {
+            await _patientService.AddInpection(model, id, Id, name);
             return Ok();
         }
+        
+    }
 
         [HttpGet("{id}/inspections")]
         [Authorize]
-        public async Task<IActionResult> GetListPatientInspections([FromQuery] Guid id, [FromQuery] bool grouped,
+        public async Task<ActionResult<InspectionPagedListModel>> GetListPatientInspections([FromQuery] Guid id, [FromQuery] bool grouped,
             [FromQuery] List<Guid> icdRoots, [FromQuery(Name = "page")] int pageNumber = 1,
             [FromQuery(Name = "pageSize")] int pageSize = 5)
         {
@@ -176,7 +203,7 @@ namespace hospital_api.Controllers
         
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<IActionResult> GetPatient(string id)
+        public async Task<ActionResult<PatientModel>> GetPatient(string id)
         {
             PatientModel result = await _patientService.GetPatient(id);
             return Ok(result);
@@ -184,7 +211,7 @@ namespace hospital_api.Controllers
 
         [HttpGet("{id}/inspections/search")]
         [Authorize]
-        public async Task<IActionResult> SearchPatientInspection(Guid id, [FromQuery] string? request)
+        public async Task<ActionResult<InspectionShortModel[]>> SearchPatientInspection(Guid id, [FromQuery] string? request)
         {
             
             InspectionShortModel[] inspections = await _patientService.GetInspectionWithoutChild(id, request);

@@ -126,6 +126,7 @@ public class InspectionService : IInspectionService
                     model.conclusion == Conclusion.Death)
                 {
                     inspectionEditModel.deathDate = model.deathDate;
+                    inspectionEditModel.nextVisitDate = null;
                 }
 
                 await _inspectionRepository.SaveChangesInspection(inspectionEditModel);

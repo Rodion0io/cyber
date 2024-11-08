@@ -25,7 +25,7 @@ namespace hospital_api.Controllers
         
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<IActionResult> GetInspection(Guid id)
+        public async Task<ActionResult<InspectionModel>> GetInspection(Guid id)
         {
             
             var authHeader = HttpContext.Request.Headers["Authorization"];
@@ -63,7 +63,7 @@ namespace hospital_api.Controllers
 
         [HttpGet("{id}/chain")]
         [Authorize]
-        public async Task<IActionResult> GetInspectionChain(Guid id)
+        public async Task<ActionResult<InspectionPreviewModel[]>> GetInspectionChain(Guid id)
         {
 
             if (await _inspectionService.CheckValidInspection(id))

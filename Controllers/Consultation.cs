@@ -71,7 +71,7 @@ public class Consultation : Controller
     
     [HttpGet("{id}")]
     [Authorize]
-    public async Task<IActionResult> GetConsultation([FromQuery] string id)
+    public async Task<ActionResult<ConsultationModel>> GetConsultation([FromQuery] string id)
     {
 
         var result = await _consultationService.GetConcreteConsultation(Guid.Parse(id));

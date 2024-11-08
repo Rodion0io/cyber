@@ -78,7 +78,7 @@ namespace hospital_api.Controllers
         
         [HttpGet("profile")]
         [Authorize]
-        public async Task<IActionResult> GetProfile()
+        public async Task<ActionResult<DoctorModel>> GetProfile()
         {
             
             // Так стоит получать id для дальнеших операций?
