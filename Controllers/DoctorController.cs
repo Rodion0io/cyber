@@ -88,7 +88,7 @@ namespace hospital_api.Controllers
         
             DoctorModel doctor = await _doctorServic.GetDoctorInfa(claimIdentifier);
             
-            return Ok(_doctorServic.GetDoctorInfa(claimIdentifier));
+            return Ok(doctor);
         }
         
         [HttpPut("profile")]
