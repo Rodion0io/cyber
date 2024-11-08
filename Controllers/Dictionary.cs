@@ -32,8 +32,10 @@ public class Dictionary : Controller
         int totalPages = (int)Math.Ceiling(18 / (double)pageSize);
         
         
-        //Почему не работает???
-        // var items = listSpeciality.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+        if (name != null)
+        {
+            listSpeciality = listSpeciality.Where(i => i.name.Contains(name)).ToList();
+        }
         
         // Это уже сама пагинация
         var items = listSpeciality.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
@@ -62,6 +64,10 @@ public class Dictionary : Controller
         var listIcd = await _dictionaryService.FullListIcd();
         int totalCount = await _dictionaryService.returnLenghtTable();
         int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+        if (name != null)
+        {
+            listIcd = listIcd.Where(i => i.name.Contains(name) || i.code.Contains(name)).ToList();
+        }
         var items = listIcd.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
         
         PageInfoModel pagination = new PageInfoModel

@@ -1,8 +1,10 @@
+using System.Globalization;
 using hospital_api.Dates;
 using hospital_api.Enums;
 using hospital_api.Modules;
 using hospital_api.Repositories.repositoryInterfaces;
 using hospital_api.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Services;
 
@@ -24,6 +26,8 @@ public class ReportService : IReportService
         List<Guid> icdRoot)
     {
         int totalCountInspection = 0;
+        
+        // var copy = _context.Inspections.ToList();
         
         var copy = _context.Inspections.Select(i => new InspectionPreviewModel
         {
@@ -71,34 +75,74 @@ public class ReportService : IReportService
             reportFilter.icdRoots.Add(nameIcd);
         }
         
-        // List<IcdRootsReportRecordModel> records = new List<IcdRootsReportRecordModel>();
-        
-        var records = copy
-            .GroupBy(i => i.patientId)
-            .Select(group =>
+
+        // Создаем список словарей, где каждый словарь представляет собой пару "пациент - код диагноза"
+        var patientDiagnosesList = new List<Dictionary<string, object>>();
+
+        foreach (var patient in copy)
+        {
+            var twoSymbolsRecCode = await _dictionaryRepository.getTwoSymbolsRecCode(patient.diagnosis.code);
+            var recCode = icdRoot.FirstOrDefault(i => _dictionaryRepository.getRecCodeParent(i).Result == twoSymbolsRecCode);
+            var icdCode = await _dictionaryRepository.getIcd10Code(recCode);
+
+            // Ищем, есть ли уже такой пациент в списке
+            var patientDict = patientDiagnosesList.FirstOrDefault(p => p["Patient"].ToString() == patient.patient);
+
+            if (patientDict == null)
             {
-                var patientInspections = group.ToList();
-                var patient = patientInspections.First();
-
-                var visitsByRoot = patientInspections
-                    .GroupBy(i => i.diagnosis?.code)
-                    .Where(g => g.Key != null)
-                    .ToDictionary(g => g.Key, g => g.Count());
-
-                return new IcdRootsReportRecordModel
+                // Если пациента еще нет в списке, создаем новый словарь
+                patientDict = new Dictionary<string, object>
                 {
-                    patientName = patient.patient,
-                    patientBirthdate = DateTime.Now, // Предполагается, что у вас есть такое поле
-                    gender = Gender.Female, // Предполагается, что у вас есть такое поле
-                    visitsByRoot = visitsByRoot
+                    { "Patient", patient.patientId },
+                    { "Diagnoses", new Dictionary<string, int>() }
                 };
-            })
-            .ToList();
+                patientDiagnosesList.Add(patientDict);
+            }
 
+            // Получаем словарь диагнозов для текущего пациента
+            var diagnosesDict = (Dictionary<string, int>)patientDict["Diagnoses"];
+
+            // Увеличиваем счетчик для текущего диагноза
+            if (diagnosesDict.ContainsKey(icdCode))
+            {
+                diagnosesDict[icdCode]++;
+            }
+            else
+            {
+                diagnosesDict[icdCode] = 1;
+            }
+        }
+        
+        
+        List<IcdRootsReportRecordModel> list = new List<IcdRootsReportRecordModel>();
+
+
+        foreach (var value in patientDiagnosesList)
+        {
+            var patientId = (Guid)value["Patient"];
+            var diagnosesDict = (Dictionary<string, int>)value["Diagnoses"];
+            
+            // это венсити в репозиторий
+            string patientName = _context.Patients.FirstOrDefaultAsync(i => i.id == patientId).Result.name;
+            Gender patientGender = _context.Patients.FirstOrDefaultAsync(i => i.id == patientId).Result.gender;
+            DateTime birthday = _context.Patients.FirstOrDefaultAsync(i => i.id == patientId).Result.birthday;
+
+            IcdRootsReportRecordModel model = new IcdRootsReportRecordModel
+            {
+                patientName = patientName,
+                patientBirthdate = birthday,
+                gender = patientGender,
+                visitsByRoot = diagnosesDict
+            };
+            
+            list.Add(model);
+        }
+
+        
         IcdRootsReportModel result = new IcdRootsReportModel
         {
             filters = reportFilter,
-            records = records.ToArray(),
+            records = list.ToArray(),
             // summaryByRoot = 
         };
         return result;
