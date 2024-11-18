@@ -5,6 +5,7 @@ namespace hospital_api.Modules;
 
 public class InspectionCreateModel
 {
+    
     [Required]
     public DateTime date { get; set; }
     [Required]

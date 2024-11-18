@@ -165,7 +165,7 @@ namespace hospital_api.Controllers
 
         [HttpGet("{id}/inspections")]
         [Authorize]
-        public async Task<ActionResult<InspectionPagedListModel>> GetListPatientInspections([FromQuery] Guid id, [FromQuery] bool grouped,
+        public async Task<ActionResult<InspectionPagedListModel>> GetListPatientInspections(Guid id, [FromQuery] bool grouped,
             [FromQuery] List<Guid> icdRoots, [FromQuery(Name = "page")] int pageNumber = 1,
             [FromQuery(Name = "pageSize")] int pageSize = 5)
         {

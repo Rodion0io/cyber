@@ -288,12 +288,7 @@ public class PatientService : IPatientService
         
         if (scheduledVisits != null && scheduledVisits != false)
         {
-            var maxDates = сopy
-                .GroupBy(i => i.patient)
-                .Select(g => new { Patient = g.Key, MaxDate = g.Max(i => i.date) })
-                .ToList();
-            сopy = сopy.Where(i => i.nextVisitDate != null &&
-                                   maxDates.Any(md => md.Patient == i.patient && i.nextVisitDate > md.MaxDate)).ToList();
+            сopy = сopy.Where(i => i.nextVisitDate != null).ToList();
         }
 
         var patientsWithNames = new List<(Inspection Inspection, string PatientName)>();
