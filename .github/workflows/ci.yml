@@ -34,10 +34,10 @@ jobs:
       - name: Install Semgrep
         run: pip install semgrep
 
-      - name: Debug current directory
+      - name: Show current dir and files
         run: |
           pwd
           ls -la
 
       - name: Run Semgrep security scan
-        run: semgrep --config .rules.yaml .
+        run: semgrep --config rules.yaml .
