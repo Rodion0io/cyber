@@ -1,4 +1,4 @@
-name: cyber ci
+name: cybersecure ci/cd
 
 on:
   push:
@@ -34,5 +34,10 @@ jobs:
       - name: Install Semgrep
         run: pip install semgrep
 
+      - name: Debug current directory
+        run: |
+          pwd
+          ls -la
+
       - name: Run Semgrep security scan
-        run: semgrep --config .rules.yaml .
+        run: semgrep --config .rules.yml .
