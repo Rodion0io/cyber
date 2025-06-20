@@ -32,4 +32,4 @@ jobs:
 
       - name: Run Semgrep security scan
         run: |
-          semgrep --config .semgrep-rules.yml
+          semgrep --config .semgrep-rules.yml .
