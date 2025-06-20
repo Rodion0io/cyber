@@ -1,4 +1,4 @@
-name: cybersecure ci/cd
+name: cyber ci
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v3
@@ -26,10 +26,13 @@ jobs:
       - name: Run tests
         run: dotnet test --no-build
 
+      - name: Setup Python for Semgrep
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
       - name: Install Semgrep
-        run: |
-          pip install semgrep
+        run: pip install semgrep
 
       - name: Run Semgrep security scan
-        run: |
-          semgrep --config .semgrep-rules.yml .
+        run: semgrep --config .semgrep-rules.yml .
