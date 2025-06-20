@@ -40,4 +40,4 @@ jobs:
           ls -la
 
       - name: Run Semgrep security scan
-        run: semgrep --config .rules.yml .
+        run: semgrep --config .semgrep-rules.yml .
