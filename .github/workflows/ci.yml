@@ -35,4 +35,4 @@ jobs:
         run: pip install semgrep
 
       - name: Run Semgrep security scan
-        run: semgrep --config /Users/rodionrybko/RiderProjects/HospitalAPI/rules.yaml .
+        run: semgrep --config HospitalAPI/rules.yaml .
