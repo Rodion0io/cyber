@@ -69,9 +69,11 @@ public class DoctorServic : IDoctorServic
     public async Task<TokenRespones> Login(string email, string password)
     {
        
-        var account = _accountRepository.FindDoctor(email);
+        // var account = _accountRepository.FindDoctor(email);
         
-        
+        var account = await _context.Doctors
+            .FromSqlRaw($"SELECT * FROM doctors WHERE email = {email}")
+            .FirstOrDefaultAsync();
         
         // var account = await _context.Doctors
         //     .FromSqlRaw("SELECT * FROM doctors WHERE email = {0}", email)
