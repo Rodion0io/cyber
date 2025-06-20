@@ -10,8 +10,17 @@ using hospital_api.Repositories.repositoryInterfaces;
 using hospital_api.Services;
 using hospital_api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using DotNetEnv;  // Добавьте using для DotNetEnv
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Загрузка переменных из values.env
+Env.Load("values.env");  // <-- вызов тут, сразу после создания builder
+
+// Теперь получаем строку подключения из переменной окружения
+var connection = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+
+// Если хотите — для отладки можно вывести в лог или консоль
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -37,7 +46,6 @@ builder.Services.AddSwaggerGen(c =>
     };
     c.AddSecurityDefinition("Bearer", securityScheme);
 
-    
     var securityRequirement = new OpenApiSecurityRequirement
     {
         {securityScheme, new string[] { }}
@@ -45,13 +53,14 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityRequirement(securityRequirement);
 });
 
+
+
 //Поставил формат времени
 var cultureInfo = new CultureInfo("ru-RU");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
-// БД
-var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+// Регистрация DbContext с использованием строки из env
 builder.Services.AddDbContext<AccountsContext>(options => options.UseNpgsql(connection));
 
 // Регистрация репозиториев
@@ -80,35 +89,18 @@ builder.Services.AddAuth(builder.Configuration);
 
 var app = builder.Build();
 
-// Инициализация БД
-// using var serviceScope = app.Services.CreateScope();
-// var dbContext = serviceScope.ServiceProvider.GetService<AccountsContext>();
-// dbContext?.Database.Migrate(); // Миграция
-
-// Configure the HTTP request pipeline.
+// остальной код без изменений
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Инициализация специальностей
 using (var scope = app.Services.CreateScope())
 {
     var value = scope.ServiceProvider.GetRequiredService<DictionaryRepository>();
     value.Add();
 }
-
-// Инициализация данных из JSON-файла
-// using (var scope = app.Services.CreateScope())
-// {
-//     var context = scope.ServiceProvider.GetRequiredService<AccountsContext>();
-//
-//     var dictionaryServic = scope.ServiceProvider.GetRequiredService<IDictionaryServic>();
-//     string jsonFilePath = "/Users/rodionrybko/RiderProjects/hospital_api/hospital_api/1.2.643.5.1.13.13.11.1005_2.27.json";
-//     var list = await dictionaryServic.Icd10ModelsFromJson(jsonFilePath);
-//     await dictionaryServic.AddIcd10(list);
-// }
 
 app.UseAuthentication();
 app.UseAuthorization();

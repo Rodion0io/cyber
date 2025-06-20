@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/rodionrybko/RiderProjects/hospital_api/hospital_api/hospital_api.csproj": {}
+    "/Users/rodionrybko/RiderProjects/HospitalAPI/hospital_api.csproj": {}
   },
   "projects": {
-    "/Users/rodionrybko/RiderProjects/hospital_api/hospital_api/hospital_api.csproj": {
+    "/Users/rodionrybko/RiderProjects/HospitalAPI/hospital_api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/rodionrybko/RiderProjects/hospital_api/hospital_api/hospital_api.csproj",
+        "projectUniqueName": "/Users/rodionrybko/RiderProjects/HospitalAPI/hospital_api.csproj",
         "projectName": "hospital_api",
-        "projectPath": "/Users/rodionrybko/RiderProjects/hospital_api/hospital_api/hospital_api.csproj",
+        "projectPath": "/Users/rodionrybko/RiderProjects/HospitalAPI/hospital_api.csproj",
         "packagesPath": "/Users/rodionrybko/.nuget/packages/",
-        "outputPath": "/Users/rodionrybko/RiderProjects/hospital_api/hospital_api/obj/",
+        "outputPath": "/Users/rodionrybko/RiderProjects/HospitalAPI/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/rodionrybko/.nuget/NuGet/NuGet.Config"
@@ -38,6 +38,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "DotNetEnv": {
+              "target": "Package",
+              "version": "[3.1.1, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[8.0.10, )"

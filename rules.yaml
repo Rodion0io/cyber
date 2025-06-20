@@ -1,0 +1,83 @@
+rules:
+  - id: hardcoded-db-password
+    languages: [ json ]
+    severity: ERROR
+    message: "напрямую указаны данные бд"
+    metadata:
+      category: security
+      technology: dotnet
+    patterns:
+      - pattern: '"DefaultConnection": "$VALUE"'
+      - pattern-not: '"DefaultConnection": ""'
+  
+  
+
+
+  - id: hardcoded-secret-key
+    languages: [json]
+    severity: ERROR
+    message: "Напрямую указан секрет токена"
+    metadata:
+      category: security
+      technology: dotnet
+    patterns:
+      - pattern: '"SecretKey": "$VALUE"'
+      - pattern-not: '"SecretKey": ""'
+    
+  - id: fromsqlraw-interpolated-with-var
+    languages: [ csharp ]
+    severity: ERROR
+    message: "Используется FromSqlRaw с интерполированной строкой, содержащей переменную — потенциальная SQL-инъекция."
+    pattern-regex: 'FromSqlRaw\(\$".*{.*}.*"\)'      
+    
+    
+    
+    #  - id: missing-hash-in-registeration
+#    languages: [csharp]
+#    message: "В методе Registeration отсутствует вызов hashPassword — пароль не хэшируется!"
+#    severity: ERROR
+#    patterns:
+#      - pattern-inside: |
+#          public async Task Registeration(DoctorRegisterModel model)
+#          {
+#          
+#            var newAccount = new Doctor
+#            {
+#              name = model.name,
+#              password = model.password,
+#              email = model.email,
+#              birthday = model.birthday,
+#              gender = model.gender,
+#              phone = model.phone,
+#              speciality = model.speciality
+#            };
+#            
+#            var checkAccaount = _accountRepository.FindDoctor(newAccount.email);
+#            ...
+#          }
+#      - pattern-not: |
+#          $OBJ.password = hashPassword($ANY)
+
+
+
+
+#  - id: password-should-be-hashed
+#    languages: [csharp]
+#    message: "Пароль должен быть установлен через hashPassword"
+#    severity: ERROR
+#    patterns:
+#      - pattern: |
+#          $OBJ.password = $PASS
+#      - pattern-not: |
+#            $OBJ.password = hashPassword($OBJ)
+
+    
+
+
+
+
+    
+
+
+
+

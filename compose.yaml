@@ -1,0 +1,29 @@
+﻿#services:
+#  hospital_api:
+#    image: hospital_api
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+
+version: '3.9'
+
+services:
+  zap:
+    image: owasp/zap2docker-stable
+    container_name: zap-scanner
+    depends_on:
+      - web
+    volumes:
+      - ./zap-reports:/zap/wrk
+    command: >
+      zap-baseline.py 
+      -t http://web:80 
+      -r baseline_report.html 
+      -z "-config api.disablekey=true"
+    networks:
+      - zapnet
+
+networks:
+  zapnet:
+    driver: bridge
+  

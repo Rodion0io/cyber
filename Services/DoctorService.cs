@@ -8,6 +8,8 @@ using hospital_api.Repositories.repositoryInterfaces;
 using hospital_api.Services.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace hospital_api.Services;
 
@@ -52,10 +54,9 @@ public class DoctorServic : IDoctorServic
             var checkSpeciality = _context.Specialities.FindAsync((newAccount.speciality)).Result;
             if (checkSpeciality is not null)
             {
-                var hashingPassword = new PasswordHasher<Doctor>().HashPassword(newAccount, newAccount.password);
-                newAccount.password = hashingPassword;
+                
+                newAccount.password = hashPassword(newAccount);
                 await _accountRepository.Add(newAccount);
-                Console.WriteLine($"password: {newAccount.password}, hashing password: {hashingPassword}");
             }
             else
             {
@@ -65,17 +66,27 @@ public class DoctorServic : IDoctorServic
         }
     }
     
-    public TokenRespones Login(string email, string password)
+    public async Task<TokenRespones> Login(string email, string password)
     {
-        var account = _accountRepository.FindDoctor(email);
-    
+       
+        // var account = _accountRepository.FindDoctor(email);
+        
+        var account = await _context.Doctors
+            .FromSqlRaw($"SELECT * FROM doctors WHERE email = {email}")
+            .FirstOrDefaultAsync();
+        
+        // var account = await _context.Doctors
+        //     .FromSqlRaw("SELECT * FROM doctors WHERE email = {0}", email)
+        //     .FirstOrDefaultAsync();
+
+
         if (account != null)
         {
             var result = new PasswordHasher<Doctor>().VerifyHashedPassword(account, account.password, password);
             if (result == PasswordVerificationResult.Success)
             {
-                var toke = _jwtService.GenerateToken(account);
-                return new TokenRespones{token = toke};
+                var token = _jwtService.GenerateToken(account);
+                return new TokenRespones { token = token };
             }
             else
             {
@@ -87,6 +98,7 @@ public class DoctorServic : IDoctorServic
             throw new UnauthorizedAccessException("Doctor not found");
         }
     }
+
     
     public async Task GetDataInClaim(string token)
     {
@@ -130,5 +142,11 @@ public class DoctorServic : IDoctorServic
         var claimIdentifier = _jwtService.DecodeToken(id).Claims.ToArray()[2].Value;
         
         await _accountRepository.UpdateDate(claimIdentifier, model);
+    }
+
+    private String hashPassword(Doctor Acc)
+    {
+        var hashingPassword = new PasswordHasher<Doctor>().HashPassword(Acc, Acc.password);
+        return hashingPassword;
     }
 }

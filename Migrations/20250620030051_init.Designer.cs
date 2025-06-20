@@ -12,8 +12,8 @@ using hospital_api.Dates;
 namespace hospital_api.Migrations
 {
     [DbContext(typeof(AccountsContext))]
-    [Migration("20241028103531_inspectMigr")]
-    partial class inspectMigr
+    [Migration("20250620030051_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,7 +65,7 @@ namespace hospital_api.Migrations
                     b.Property<DateTime>("modifiedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("parentId")
+                    b.Property<Guid?>("parentId")
                         .HasColumnType("uuid");
 
                     b.HasKey("id");
@@ -103,8 +103,9 @@ namespace hospital_api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("code")
-                        .HasColumnType("uuid");
+                    b.Property<string>("code")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("createTime")
                         .HasColumnType("timestamp with time zone");
@@ -170,46 +171,11 @@ namespace hospital_api.Migrations
                     b.ToTable("Doctors");
                 });
 
-            modelBuilder.Entity("hospital_api.Modules.DoctorModel", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("birthday")
-                        .HasColumnType("text");
-
-                    b.Property<string>("createTime")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("gender")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("phone")
-                        .HasColumnType("text");
-
-                    b.HasKey("id");
-
-                    b.ToTable("DoctorModel");
-                });
-
             modelBuilder.Entity("hospital_api.Modules.Icd10Model", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<Guid>("secondKey")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("ID");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+                        .HasColumnType("uuid");
 
                     b.Property<int?>("actual")
                         .HasColumnType("integer")
@@ -227,6 +193,10 @@ namespace hospital_api.Migrations
                         .HasColumnType("text")
                         .HasColumnName("DATE");
 
+                    b.Property<int>("id")
+                        .HasColumnType("integer")
+                        .HasColumnName("ID");
+
                     b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("text")
@@ -240,7 +210,7 @@ namespace hospital_api.Migrations
                         .HasColumnType("text")
                         .HasColumnName("REC_CODE");
 
-                    b.HasKey("id");
+                    b.HasKey("secondKey");
 
                     b.ToTable("Icd");
                 });
@@ -255,7 +225,7 @@ namespace hospital_api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("baseInspectionId")
+                    b.Property<Guid?>("baseInspectionId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("complaints")
@@ -271,19 +241,19 @@ namespace hospital_api.Migrations
                     b.Property<DateTime>("date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("deathDate")
+                    b.Property<DateTime?>("deathDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("doctor")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("nextVisitDate")
+                    b.Property<DateTime?>("nextVisitDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("patient")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("previousInspectionId")
+                    b.Property<Guid?>("previousInspectionId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("treatment")
@@ -365,7 +335,7 @@ namespace hospital_api.Migrations
 
             modelBuilder.Entity("hospital_api.Modules.Inspection", b =>
                 {
-                    b.HasOne("hospital_api.Modules.DoctorModel", "DoctorModel")
+                    b.HasOne("hospital_api.Modules.Doctor", "Doctor")
                         .WithMany()
                         .HasForeignKey("doctor")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -377,7 +347,7 @@ namespace hospital_api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("DoctorModel");
+                    b.Navigation("Doctor");
 
                     b.Navigation("PatientModel");
                 });
